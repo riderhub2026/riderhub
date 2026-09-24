@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <script>
+    /* Chọn theme đã lưu TRƯỚC khi trang vẽ hình, tránh nháy sáng/tối lúc tải trang.
+       Nếu chưa lưu gì, để nguyên cho CSS (prefers-color-scheme) tự quyết định. */
+    (function () {
+      try {
+        var t = localStorage.getItem('rh-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { }
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>RiderHub – Không ai rớt đoàn, không ai đi một mình</title>
+  <link rel="icon" href="logo.jpg" type="image/jpeg">
+  <meta name="description"
+    content="RiderHub giữ cả đoàn xe máy kết nối theo thời gian thực: radar khoảng cách, cảnh báo rớt đoàn, SOS khẩn cấp, chia tiền tự động và điểm cứu hộ cộng đồng. Đang mở Beta trên Android.">
+  <meta name="theme-color" content="#FF6B35">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============ TOKENS ============ */
+    :root {
+      --bg: #F4F5F7;
+      --surface: #FFFFFF;
+      --surface-raised: #FFFFFF;
+      --border: #E2E5EA;
+      --text: #0B0F14;
+      --text-soft: #5B6472;
+      --primary: #FF6B35;
+      --primary-ink: #1A0800;
+      --primary-soft: #FFE8DB;
+      --gps: #2563EB;
+      --success: #15803D;
+      --warning: #B45309;
+      --danger: #DC2626;
+      --shadow: 0 20px 48px -20px rgba(11, 15, 20, .18);
+      --shadow-lg: 0 32px 64px -28px rgba(11, 15, 20, .28);
+      --r-xl: 32px;
+      --r-lg: 24px;
+      --r-md: 16px;
+      --r-sm: 12px;
+      --r-btn: 14px;
+      --maxw: 1160px;
+      --font: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --header-h: 72px;
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0A0D12;
+      --surface: #141A22;
+      --surface-raised: #1B222D;
+      --border: #2A313C;
+      --text: #F4F6F8;
+      --text-soft: #9CA3AF;
+      --primary: #FF6B35;
+      --primary-ink: #1A0800;
+      --primary-soft: #3A2013;
+      --gps: #3B82F6;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --shadow: 0 24px 56px -20px rgba(0, 0, 0, .55);
+      --shadow-lg: 0 36px 72px -28px rgba(0, 0, 0, .7);
+    }
+
+    @media (prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0A0D12;
+        --surface: #141A22;
+        --surface-raised: #1B222D;
+        --border: #2A313C;
+        --text: #F4F6F8;
+        --text-soft: #9CA3AF;
+        --primary: #FF6B35;
+        --primary-ink: #1A0800;
+        --primary-soft: #3A2013;
+        --gps: #3B82F6;
+        --success: #22C55E;
+        --warning: #F59E0B;
+        --danger: #EF4444;
+        --shadow: 0 24px 56px -20px rgba(0, 0, 0, .55);
+        --shadow-lg: 0 36px 72px -28px rgba(0, 0, 0, .7);
+      }
+    }
+
+    /* ============ RESET ============ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--header-h) + 12px);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      transition: background .3s ease, color .3s ease;
+      overflow-x: hidden;
+      /* chặn cuộn ngang nếu có phần tử xoay/lệch tràn ra ngoài trên màn hình nhỏ */
+    }
+
+    img,
+    svg {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    figure {
+      margin: 0;
+    }
+
+    button {
+      font: inherit;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -60px;
+      background: var(--primary);
+      color: var(--primary-ink);
+      padding: 10px 16px;
+      border-radius: var(--r-btn);
+      font-weight: 700;
+      z-index: 100;
+      transition: top .2s ease;
+    }
+
+    .skip-link:focus {
+      top: 12px;
+    }
+
+    .wrap {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: 96px 0;
+    }
+
+    @media (max-width:640px) {
+      section {
+        padding: 72px 0;
+      }
+    }
+
+    h2.section-title {
+      font-size: clamp(1.75rem, 3.6vw, 2.55rem);
+      font-weight: 800;
+      letter-spacing: -.025em;
+      line-height: 1.15;
+      max-width: 20ch;
+    }
+
+    .section-kicker {
+      color: var(--text-soft);
+      font-size: 1.05rem;
+      max-width: 56ch;
+      margin-top: 16px;
+      line-height: 1.7;
+    }
+
+    .section-head {
+      margin: 48px 0px;
+    }
+
+    /* ============ BUTTONS ============ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 14px 26px;
+      border-radius: var(--r-btn);
+      font-weight: 700;
+      font-size: 1rem;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: transform .18s ease, filter .18s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+      white-space: nowrap;
+    }
+
+    .btn--primary {
+      background: var(--primary);
+      color: var(--primary-ink);
+      box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--primary) 55%, transparent);
+    }
+
+    .btn--primary:hover {
+      filter: brightness(1.07);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px -8px color-mix(in srgb, var(--primary) 65%, transparent);
+    }
+
+    .btn--ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn--ghost:hover {
+      background: var(--surface);
+      border-color: var(--text-soft);
+    }
+
+    .btn--on-primary {
+      background: var(--primary-ink);
+      color: #fff;
+    }
+
+    .btn--on-primary:hover {
+      filter: brightness(1.25);
+      transform: translateY(-2px);
+    }
+
+    .btn--block {
+      width: 100%;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+      flex: none;
+    }
+
+    /* ============ HEADER ============ */
+    header.site {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(16px) saturate(1.2);
+      -webkit-backdrop-filter: blur(16px) saturate(1.2);
+      border-bottom: 1px solid var(--border);
+      transition: background .25s ease, border-color .25s ease;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--header-h);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: #0B0F14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      box-shadow: 0 4px 12px -4px rgba(0, 0, 0, .35);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-weight: 600;
+      font-size: .95rem;
+      color: var(--text-soft);
+      transition: color .15s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      transition: background .2s ease, border-color .2s ease;
+    }
+
+    .theme-btn:hover {
+      background: var(--surface);
+      border-color: var(--text-soft);
+    }
+
+    .theme-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .theme-btn .icon-moon {
+      display: none;
+    }
+
+    :root[data-theme="dark"] .theme-btn .icon-sun {
+      display: none;
+    }
+
+    :root[data-theme="dark"] .theme-btn .icon-moon {
+      display: block;
+    }
+
+    @media (prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) .theme-btn .icon-sun {
+        display: none;
+      }
+
+      :root:not([data-theme="light"]) .theme-btn .icon-moon {
+        display: block;
+      }
+    }
+
+    .nav-toggle-input {
+      display: none;
+    }
+
+    .nav-toggle-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: none;
+    }
+
+    .nav-toggle-btn span,
+    .nav-toggle-btn span::before,
+    .nav-toggle-btn span::after {
+      content: "";
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--text);
+      position: relative;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+
+    .nav-toggle-btn span::before {
+      position: absolute;
+      top: -6px;
+    }
+
+    .nav-toggle-btn span::after {
+      position: absolute;
+      top: 6px;
+    }
+
+    @media (max-width:900px) {
+      .nav-links {
+        position: fixed;
+        inset: var(--header-h) 0 auto 0;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding: 12px 24px 24px;
+        transform: translateY(-10px);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform .22s ease, opacity .22s ease;
+      }
+
+      .nav-links a {
+        padding: 14px 0;
+        width: 100%;
+        border-bottom: 1px solid var(--border);
+        font-size: 1.05rem;
+      }
+
+      .nav-toggle-btn {
+        display: flex;
+      }
+
+      .nav-toggle-input:checked~.site-nav .nav-links {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .nav-toggle-input:checked~.site-nav .nav-toggle-btn span {
+        transform: rotate(45deg);
+      }
+
+      .nav-toggle-input:checked~.site-nav .nav-toggle-btn span::before {
+        top: 0;
+        transform: rotate(90deg);
+      }
+
+      .nav-toggle-input:checked~.site-nav .nav-toggle-btn span::after {
+        opacity: 0;
+      }
+
+      .nav-cta .btn--ghost {
+        display: none;
+      }
+    }
+
+    /* ============ HERO ============ */
+    .hero {
+      padding: 56px 0 48px;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    @media (min-width:980px) {
+      .hero-grid {
+        grid-template-columns: 1.05fr .95fr;
+        gap: 36px;
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: .82rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(.85);
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.35rem, 5.4vw, 3.65rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.08;
+    }
+
+    .hero p.lede {
+      margin-top: 20px;
+      color: var(--text-soft);
+      font-size: 1.12rem;
+      line-height: 1.7;
+      max-width: 48ch;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .hero-facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 20px;
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hero-fact {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-soft);
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    .hero-fact svg {
+      width: 17px;
+      height: 17px;
+      flex: none;
+      color: var(--primary);
+    }
+
+    /* Phone mockup in hero — iPhone style */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 520px;
+    }
+
+    .phone-frame {
+      position: relative;
+      width: min(290px, 72vw);
+      aspect-ratio: 9/19.5;
+      background: #1a1a1a;
+      border-radius: 48px;
+      padding: 11px;
+      box-shadow:
+        var(--shadow-lg),
+        0 0 0 1px rgba(255, 255, 255, .12),
+        inset 0 0 0 1px rgba(255, 255, 255, .06);
+      transform: rotate(-2.5deg);
+    }
+
+    .phone-frame::before {
+      /* Dynamic Island */
+      content: "";
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 96px;
+      height: 28px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 6;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
+    }
+
+    .phone-frame::after {
+      /* Home indicator */
+      content: "";
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 108px;
+      height: 4px;
+      background: rgba(255, 255, 255, .35);
+      border-radius: 4px;
+      z-index: 6;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 38px;
+      overflow: hidden;
+      background: #0B0D12;
+      position: relative;
+    }
+
+    .phone-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 22px 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #E7EAF0;
+    }
+
+    .phone-status .dots {
+      display: flex;
+      gap: 3px;
+    }
+
+    .phone-status .dots i {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #9CA3AF;
+    }
+
+    /* App UI inside phone */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px 12px;
+    }
+
+    .app-header .tour-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .app-header .tour-meta {
+      font-size: 10px;
+      color: #9CA3AF;
+      font-weight: 600;
+    }
+
+    .app-header .live-pill {
+      background: color-mix(in srgb, #22C55E 20%, transparent);
+      color: #22C55E;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .app-header .live-pill::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #22C55E;
+      animation: badgePulse 1.6s ease-in-out infinite;
+    }
+
+    .radar-area {
+      position: relative;
+      height: 280px;
+      margin: 0 8px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 55%, #1A2420 0%, #0D1218 70%);
+    }
+
+    .radar-rings {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radar-rings span {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid;
+    }
+
+    .radar-rings .r1 {
+      width: 60px;
+      height: 60px;
+      border-color: color-mix(in srgb, #22C55E 50%, transparent);
+    }
+
+    .radar-rings .r2 {
+      width: 120px;
+      height: 120px;
+      border-color: color-mix(in srgb, #F59E0B 35%, transparent);
+    }
+
+    .radar-rings .r3 {
+      width: 180px;
+      height: 180px;
+      border-color: color-mix(in srgb, #F97316 25%, transparent);
+    }
+
+    .radar-rings .r4 {
+      width: 240px;
+      height: 240px;
+      border-color: color-mix(in srgb, #EF4444 18%, transparent);
+    }
+
+    .radar-pulse {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 1.5px solid #22C55E;
+      animation: radarPulse 2.8s ease-out infinite;
+    }
+
+    @keyframes radarPulse {
+      0% {
+        opacity: .7;
+        transform: scale(.6);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(2.2);
+      }
+    }
+
+    .radar-dot {
+      position: absolute;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .radar-dot.you {
+      width: 14px;
+      height: 14px;
+      background: #22C55E;
+      left: 50%;
+      top: 55%;
+      box-shadow: 0 0 12px #22C55E;
+    }
+
+    .radar-dot.lead {
+      width: 11px;
+      height: 11px;
+      background: #FF6B35;
+      left: 62%;
+      top: 32%;
+    }
+
+    .radar-dot.member1 {
+      width: 9px;
+      height: 9px;
+      background: #E7EAF0;
+      left: 38%;
+      top: 42%;
+    }
+
+    .radar-dot.member2 {
+      width: 9px;
+      height: 9px;
+      background: #3B82F6;
+      left: 70%;
+      top: 58%;
+    }
+
+    .radar-dot.far {
+      width: 10px;
+      height: 10px;
+      background: #EF4444;
+      left: 22%;
+      top: 22%;
+    }
+
+    .radar-label {
+      position: absolute;
+      font-size: 9px;
+      font-weight: 700;
+      color: #E7EAF0;
+      white-space: nowrap;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+    }
+
+    .radar-label.l-you {
+      left: 50%;
+      top: 62%;
+      transform: translateX(-50%);
+    }
+
+    .radar-label.l-lead {
+      left: 66%;
+      top: 28%;
+    }
+
+    .radar-label.l-far {
+      left: 8%;
+      top: 16%;
+      color: #F59E0B;
+    }
+
+    .app-bottom {
+      padding: 14px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .member-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 12px;
+      padding: 9px 12px;
+    }
+
+    .member-av {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      flex: none;
+    }
+
+    .member-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .member-info b {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .member-info span {
+      font-size: 10px;
+      color: #9CA3AF;
+      font-weight: 600;
+    }
+
+    .member-dist {
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .dist-safe {
+      color: #22C55E;
+    }
+
+    .dist-warn {
+      color: #F59E0B;
+    }
+
+    .dist-danger {
+      color: #EF4444;
+    }
+
+    .phone-glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--primary) 25%, transparent) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ============ PROBLEMS ============ */
+    .problems-list {
+      margin-top: 4px;
+      border-top: 1px solid var(--border);
+    }
+
+    .problem-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    @media (min-width:760px) {
+      .problem-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 36px;
+        align-items: start;
+      }
+    }
+
+    .problem-row .p-issue {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      color: var(--text-soft);
+      font-size: 1.02rem;
+      line-height: 1.55;
+    }
+
+    .problem-row .p-fix {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      font-size: 1.02rem;
+      font-weight: 600;
+      line-height: 1.55;
+    }
+
+    .p-mark {
+      flex: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-top: 1px;
+    }
+
+    .p-mark--issue {
+      background: transparent;
+      border: 2px solid var(--border);
+    }
+
+    .p-mark--fix {
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .p-mark--fix svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    /* ============ BENTO FEATURES ============ */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      grid-column: span 12;
+      transition: border-color .2s ease, box-shadow .25s ease, transform .25s ease;
+    }
+
+    .tile:hover {
+      border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .tile--lg {
+      min-height: 380px;
+    }
+
+    .tile--sm {
+      min-height: 200px;
+    }
+
+    @media (min-width:720px) {
+      .tile--radar {
+        grid-column: span 7;
+      }
+
+      .tile--sos {
+        grid-column: span 5;
+      }
+
+      .tile--sm {
+        grid-column: span 6;
+      }
+    }
+
+    @media (min-width:1080px) {
+      .tile--sm {
+        grid-column: span 3;
+      }
+    }
+
+    .tile h3 {
+      font-size: 1.18rem;
+      font-weight: 700;
+      letter-spacing: -.015em;
+    }
+
+    .tile p {
+      color: var(--text-soft);
+      font-size: .95rem;
+      line-height: 1.6;
+    }
+
+    .tile--sm h3 {
+      font-size: 1rem;
+    }
+
+    .tile--sm p {
+      font-size: .88rem;
+    }
+
+    .tile-visual {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .tile-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tile--radar {
+      background: linear-gradient(165deg, var(--surface) 50%, color-mix(in srgb, var(--success) 9%, var(--surface)));
+    }
+
+    .tile--sos {
+      background: linear-gradient(165deg, var(--surface) 50%, color-mix(in srgb, var(--danger) 10%, var(--surface)));
+    }
+
+    .radar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 2px;
+    }
+
+    .radar-legend span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .78rem;
+      color: var(--text-soft);
+      font-weight: 600;
+    }
+
+    .swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: none;
+    }
+
+    .sos-btn-wrap {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sos-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--danger) 50%, transparent);
+      animation: sosPulse 2.5s ease-out infinite;
+    }
+
+    .sos-ring.d2 {
+      animation-delay: .8s;
+    }
+
+    @keyframes sosPulse {
+      0% {
+        opacity: .6;
+        transform: scale(.7);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(1.3);
+      }
+    }
+
+    .sos-core {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--danger);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 800;
+      font-size: .8rem;
+      line-height: 1.25;
+      gap: 2px;
+      box-shadow: 0 10px 28px -6px color-mix(in srgb, var(--danger) 65%, transparent);
+    }
+
+    .sos-core small {
+      font-weight: 600;
+      font-size: .66rem;
+      opacity: .9;
+    }
+
+    .sos-chips {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-top: 2px;
+    }
+
+    .sos-chip {
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: .76rem;
+      font-weight: 600;
+      color: var(--text-soft);
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      width: fit-content;
+    }
+
+    .sos-chip::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--success);
+      flex: none;
+    }
+
+    .invite-chip {
+      background: var(--surface-raised);
+      border: 1.5px dashed var(--border);
+      border-radius: var(--r-sm);
+      padding: 11px 15px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: .12em;
+      width: fit-content;
+    }
+
+    .role-badges {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .role-badge {
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-size: .72rem;
+      font-weight: 700;
+    }
+
+    .role-badge--lead {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .role-badge--sweep {
+      background: color-mix(in srgb, var(--gps) 14%, var(--surface));
+      color: var(--gps);
+    }
+
+    .settle-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 11px 13px;
+      width: 100%;
+    }
+
+    .settle-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: .75rem;
+      flex: none;
+      color: #fff;
+    }
+
+    .settle-mid {
+      flex: 1;
+      font-size: .84rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .settle-mid svg {
+      width: 13px;
+      height: 13px;
+      color: var(--text-soft);
+    }
+
+    .settle-amount {
+      font-size: .84rem;
+      font-weight: 800;
+    }
+
+    .paid-pill {
+      background: color-mix(in srgb, var(--success) 16%, var(--surface));
+      color: var(--success);
+      font-size: .66rem;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+
+    .pin-cluster {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .pin {
+      width: 32px;
+      height: 32px;
+      position: relative;
+    }
+
+    .route-chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat-chip {
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 8px 12px;
+      text-align: center;
+      min-width: 78px;
+    }
+
+    .stat-chip b {
+      display: block;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .stat-chip span {
+      font-size: .68rem;
+      color: var(--text-soft);
+      font-weight: 700;
+    }
+
+    /* ============ MOCKUP GALLERY ============ */
+    .mockups-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      justify-items: center;
+    }
+
+    @media (min-width:760px) {
+      .mockup-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        align-items: end;
+      }
+    }
+
+    .mockup-card {
+      text-align: center;
+    }
+
+    .mockup-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-top: 18px;
+    }
+
+    .mockup-card p {
+      color: var(--text-soft);
+      font-size: .88rem;
+      margin-top: 6px;
+      max-width: 28ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .phone-sm {
+      position: relative;
+      width: 230px;
+      aspect-ratio: 9/19.5;
+      background: #1a1a1a;
+      border-radius: 40px;
+      padding: 9px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, .1), inset 0 0 0 1px rgba(255, 255, 255, .05);
+      margin: 0 auto;
+    }
+
+    .phone-sm .phone-screen {
+      border-radius: 32px;
+      overflow: hidden;
+      height: 100%;
+      background: #0B0D12;
+    }
+
+    .phone-sm::before {
+      /* Dynamic Island */
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 78px;
+      height: 22px;
+      background: #000;
+      border-radius: 14px;
+      z-index: 5;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .08);
+    }
+
+    .phone-sm::after {
+      /* Home indicator */
+      content: "";
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90px;
+      height: 3.5px;
+      background: rgba(255, 255, 255, .3);
+      border-radius: 3px;
+      z-index: 5;
+    }
+
+    /* Screen variants */
+    .screen-map {
+      background: linear-gradient(180deg, #0D1218, #141C18);
+    }
+
+    .screen-sos {
+      background: linear-gradient(180deg, #1A0C0C, #120808);
+    }
+
+    .screen-fund {
+      background: var(--surface);
+    }
+
+    .map-ui {
+      padding: 12px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .map-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .map-top b {
+      font-size: 12px;
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .map-canvas {
+      flex: 1;
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 60%, #1A2820, #0D1218 70%);
+    }
+
+    .map-canvas .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid;
+      left: 50%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+    }
+
+    .map-canvas .dot {
+      position: absolute;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .sos-ui {
+      padding: 20px 16px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .sos-big {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: var(--danger);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: .9rem;
+      box-shadow: 0 0 40px color-mix(in srgb, var(--danger) 50%, transparent);
+    }
+
+    .sos-big small {
+      font-size: .65rem;
+      font-weight: 600;
+      opacity: .85;
+    }
+
+    .sos-status {
+      font-size: 11px;
+      color: #FCA5A5;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .fund-ui {
+      padding: 14px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg);
+    }
+
+    .fund-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .fund-total {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .fund-total b {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .fund-total span {
+      display: block;
+      font-size: 10px;
+      color: var(--text-soft);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .fund-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+
+    .fund-item .av {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+    }
+
+    .fund-item .info {
+      flex: 1;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .fund-item .amt {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    /* ============ STEPS ============ */
+    .steps {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      counter-reset: step;
+    }
+
+    @media (min-width:800px) {
+      .steps {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .step {
+      position: relative;
+      padding: 28px 24px 8px;
+      border-top: 2px solid var(--border);
+    }
+
+    @media (min-width:800px) {
+      .step {
+        padding: 32px 24px 8px 0;
+      }
+
+      .step+.step {
+        padding-left: 28px;
+        border-left: 1px solid var(--border);
+        border-top: 2px solid var(--border);
+      }
+    }
+
+    .step-num {
+      counter-increment: step;
+      font-weight: 800;
+      font-size: .82rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .step-num::before {
+      content: "0" counter(step);
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.02em;
+    }
+
+    .step h3 {
+      font-size: 1.08rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      color: var(--text-soft);
+      font-size: .94rem;
+      line-height: 1.6;
+    }
+
+    /* ============ SAFETY ============ */
+    .safety {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .safety-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    @media (min-width:920px) {
+      .safety-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 56px;
+      }
+    }
+
+    .zone-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .zone-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .zone-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex: none;
+      box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 20%, transparent);
+    }
+
+    .zone-row b {
+      font-size: .95rem;
+      font-weight: 700;
+    }
+
+    .zone-row span {
+      margin-left: auto;
+      color: var(--text-soft);
+      font-size: .86rem;
+      font-weight: 600;
+    }
+
+    .hotlines {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hotline {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface-raised);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 16px 18px;
+      transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+
+    .hotline:hover {
+      border-color: var(--danger);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .hotline-num {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--danger) 12%, var(--surface));
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      flex: none;
+    }
+
+    .hotline-text b {
+      display: block;
+      font-size: .98rem;
+      font-weight: 700;
+    }
+
+    .hotline-text span {
+      color: var(--text-soft);
+      font-size: .84rem;
+    }
+
+    .safety-note {
+      margin-top: 18px;
+      color: var(--text-soft);
+      font-size: .86rem;
+      line-height: 1.65;
+      max-width: 52ch;
+    }
+
+    /* ============ FAQ ============ */
+    .faq-list {
+      border-top: 1px solid var(--border);
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-item summary {
+      padding: 22px 4px;
+      font-weight: 700;
+      font-size: 1.02rem;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-item summary::after {
+      content: "+";
+      font-size: 1.35rem;
+      font-weight: 400;
+      color: var(--text-soft);
+      flex: none;
+      transition: transform .2s ease;
+    }
+
+    .faq-item[open] summary::after {
+      transform: rotate(45deg);
+    }
+
+    .faq-item p {
+      padding: 0 4px 22px;
+      color: var(--text-soft);
+      font-size: .95rem;
+      line-height: 1.65;
+      max-width: 64ch;
+    }
+
+    /* ============ FINAL CTA ============ */
+    .final-cta {
+      background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 55%, #B0271A) 100%);
+      border-radius: var(--r-xl);
+      padding: 68px 40px;
+      text-align: center;
+      color: var(--primary-ink);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 20%, rgba(255, 255, 255, .18), transparent 55%);
+      pointer-events: none;
+    }
+
+    @media (max-width:640px) {
+      .final-cta {
+        padding: 52px 24px;
+        border-radius: 24px;
+      }
+    }
+
+    .final-cta h2 {
+      font-size: clamp(1.7rem, 4vw, 2.55rem);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      max-width: 18ch;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .final-cta p {
+      margin-top: 14px;
+      font-weight: 600;
+      opacity: .88;
+      position: relative;
+    }
+
+    .final-cta .hero-ctas {
+      justify-content: center;
+      margin-top: 32px;
+      position: relative;
+    }
+
+    /* ============ FOOTER ============ */
+    footer {
+      padding: 56px 0 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .footer-tagline {
+      color: var(--text-soft);
+      font-size: .92rem;
+      max-width: 34ch;
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-soft);
+      font-size: .9rem;
+      font-weight: 600;
+      transition: color .15s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    .footer-bottom {
+      margin-top: 40px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      color: var(--text-soft);
+      font-size: .82rem;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="#main" class="skip-link">Bỏ qua tới nội dung chính</a>
+
+  <header class="site">
+    <div class="wrap">
+      <input type="checkbox" id="nav-toggle" class="nav-toggle-input" aria-hidden="true">
+      <div class="site-nav">
+        <a href="#top" class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <img src="logo.jpg" alt="RiderHub" width="36" height="36"
+              style="width:100%;height:100%;object-fit:contain;border-radius:11px;display:block;">
+          </span>
+          RiderHub
+        </a>
+        <nav class="nav-links" aria-label="Điều hướng chính">
+          <a href="#tinh-nang">Tính năng</a>
+          <a href="#mockup">Giao diện</a>
+          <a href="#an-toan">An toàn</a>
+          <a href="#cau-hoi">Câu hỏi</a>
+          <a href="#beta">Tải Beta</a>
+        </nav>
+        <div class="nav-cta">
+          <button class="theme-btn" id="theme-toggle" aria-label="Chuyển giao diện sáng/tối" type="button">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5z" />
+            </svg>
+          </button>
+          <a href="#beta" class="btn btn--ghost">Tải Beta</a>
+          <label for="nav-toggle" class="nav-toggle-btn" aria-label="Mở menu"><span></span></label>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- HERO -->
+    <div id="top"></div>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="hero-badge">Beta Android đang mở</span>
+          <h1>Không ai rớt đoàn.<br>Không ai lẻ loi giữa đường.</h1>
+          <p class="lede">RiderHub giữ cả đoàn xe kết nối theo thời gian thực — vị trí từng người, cảnh báo rớt đoàn, sổ
+            quỹ chung và một nút SOS khi có chuyện — để chuyến đi nào cũng trọn vẹn.</p>
+          <div class="hero-ctas">
+            <a href="#beta" class="btn btn--primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 3v12M7 10l5 5 5-5" />
+                <path d="M5 19h14" />
+              </svg>
+              Tải bản Beta Android
+            </a>
+            <a href="#tinh-nang" class="btn btn--ghost">Xem tính năng</a>
+          </div>
+          <div class="hero-facts">
+            <span class="hero-fact">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+              Định vị đoàn theo thời gian thực
+            </span>
+            <span class="hero-fact">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .7 2.9a2 2 0 0 1-.4 2.1L8 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.4 1.9.6 2.9.7a2 2 0 0 1 1.7 2z" />
+              </svg>
+              Gọi thẳng 113 · 114 · 115
+            </span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="phone-glow"></div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <img src="app-screenshot.png" alt="RiderHub app – bản đồ & radar đoàn"
+                style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEMS -->
+    <section class="wrap">
+      <div class="section-head">
+        <h2 class="section-title">Những nỗi lo quen thuộc của dân phượt đoàn</h2>
+        <p class="section-kicker">Chạy đoàn càng đông, rủi ro càng nhiều. RiderHub xử lý gọn 4 vấn đề khiến hội đi phượt
+          hay lo lắng nhất.</p>
+      </div>
+      <div class="problems-list">
+        <div class="problem-row">
+          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Lạc đoàn, rớt lại giữa đèo mà không ai hay
+            biết.</div>
+          <div class="p-fix"><span class="p-mark p-mark--fix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="3">
+                <path d="M4 12l5 5L20 6" />
+              </svg></span>Radar 360° &amp; bản đồ trực tiếp báo động ngay khi có người rớt đoàn.</div>
+        </div>
+        <div class="problem-row">
+          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Xe hỏng, thủng lốp giữa đường không biết tìm ai
+            giúp.</div>
+          <div class="p-fix"><span class="p-mark p-mark--fix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="3">
+                <path d="M4 12l5 5L20 6" />
+              </svg></span>Mạng lưới điểm cứu hộ do chính cộng đồng biker xác thực.</div>
+        </div>
+        <div class="problem-row">
+          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Tai nạn, sự cố cần ứng cứu gấp giữa nơi hẻo
+            lánh.</div>
+          <div class="p-fix"><span class="p-mark p-mark--fix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="3">
+                <path d="M4 12l5 5L20 6" />
+              </svg></span>Nút SOS giữ 2 giây — báo động cả đoàn và gọi thẳng 113/114/115.</div>
+        </div>
+        <div class="problem-row">
+          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Tiền xăng, tiền ăn, tiền phòng nghỉ chia mãi
+            vẫn rối.</div>
+          <div class="p-fix"><span class="p-mark p-mark--fix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="3">
+                <path d="M4 12l5 5L20 6" />
+              </svg></span>Sổ quỹ tự động chia và gợi ý chuyển khoản với số lần ít nhất.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES BENTO -->
+    <section class="wrap" id="tinh-nang">
+      <div class="section-head">
+        <h2 class="section-title">Mọi thứ một đoàn xe cần, trong một ứng dụng</h2>
+        <p class="section-kicker">Từ lúc rủ nhau lên đường đến khi quyết toán chi phí cuối chuyến — RiderHub đi cùng cả
+          đoàn suốt hành trình.</p>
+      </div>
+
+      <div class="bento">
+        <article class="tile tile--lg tile--radar">
+          <div class="tile-body">
+            <h3>Nhìn thấy cả đoàn, mọi lúc</h3>
+            <p>Radar khoảng cách 360° và bản đồ trực tiếp cho biết chính xác ai đang ở đâu, cách bạn bao xa — cách nhau
+              quá 1,5&nbsp;km là báo động ngay.</p>
+          </div>
+          <div class="tile-visual">
+            <svg viewBox="0 0 240 200" width="220" height="180">
+              <circle cx="120" cy="105" r="24" fill="none" stroke="var(--success)" stroke-width="1.4" opacity=".9" />
+              <circle cx="120" cy="105" r="48" fill="none" stroke="var(--warning)" stroke-width="1.2" opacity=".7" />
+              <circle cx="120" cy="105" r="72" fill="none" stroke="#F97316" stroke-width="1.1" opacity=".55" />
+              <circle cx="120" cy="105" r="94" fill="none" stroke="var(--danger)" stroke-width="1" opacity=".4" />
+              <circle cx="120" cy="105" r="5" fill="var(--success)" />
+              <circle cx="133" cy="90" r="4" fill="var(--success)" />
+              <circle cx="103" cy="128" r="4" fill="var(--warning)" />
+              <circle cx="163" cy="130" r="4" fill="#F97316" />
+              <circle cx="70" cy="70" r="4" fill="var(--danger)" />
+            </svg>
+          </div>
+          <div class="radar-legend">
+            <span><i class="swatch" style="background:var(--success)"></i>An toàn &lt;500m</span>
+            <span><i class="swatch" style="background:var(--warning)"></i>Chú ý 500m–1km</span>
+            <span><i class="swatch" style="background:#F97316"></i>Cảnh báo 1–1,5km</span>
+            <span><i class="swatch" style="background:var(--danger)"></i>Rớt đoàn &gt;1,5km</span>
+          </div>
+        </article>
+
+        <article class="tile tile--lg tile--sos">
+          <div class="tile-body">
+            <h3>Gặp chuyện, cả đoàn biết ngay</h3>
+            <p>Giữ nút 2 giây để phát báo động khẩn cấp kèm vị trí GPS tới toàn đoàn, đồng thời kết nối nhanh tới 113,
+              114, 115.</p>
+          </div>
+          <div class="tile-visual">
+            <div class="sos-btn-wrap">
+              <span class="sos-ring"></span>
+              <span class="sos-ring d2"></span>
+              <div class="sos-core">SOS<small>Giữ 2 giây</small></div>
+            </div>
+          </div>
+          <div class="sos-chips">
+            <span class="sos-chip">Minh đang quay lại hỗ trợ</span>
+            <span class="sos-chip">Nam đã nhận được tín hiệu</span>
+          </div>
+        </article>
+
+        <article class="tile tile--sm">
+          <div class="tile-body">
+            <h3>Điều hành đoàn xe</h3>
+            <p>Tạo tour trong vài giây, mời cả nhóm chỉ bằng một mã 8 ký tự hoặc quét QR.</p>
+          </div>
+          <div class="tile-visual" style="flex-direction:column;gap:10px;align-items:flex-start;">
+            <span class="invite-chip">DALAT2026</span>
+            <span class="role-badges">
+              <span class="role-badge role-badge--lead">Trưởng đoàn</span>
+              <span class="role-badge role-badge--sweep">Chốt đoàn</span>
+            </span>
+          </div>
+        </article>
+
+        <article class="tile tile--sm">
+          <div class="tile-body">
+            <h3>Sổ quỹ &amp; quyết toán</h3>
+            <p>Ghi chi tiêu chung, RiderHub tự chia và gợi ý ai chuyển cho ai — ít lần chuyển khoản nhất.</p>
+          </div>
+          <div class="tile-visual">
+            <div class="settle-row">
+              <span class="settle-avatar" style="background:#3B82F6">N</span>
+              <span class="settle-mid">→ M<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg></span>
+              <span class="settle-amount">350.000&nbsp;₫</span>
+              <span class="paid-pill">Đã trả</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="tile tile--sm">
+          <div class="tile-body">
+            <h3>Điểm cứu hộ cộng đồng</h3>
+            <p>Vá xe, cây xăng, trạm y tế dọc đường — do chính biker xác thực, tin được.</p>
+          </div>
+          <div class="tile-visual">
+            <div class="pin-cluster" aria-hidden="true">
+              <svg class="pin" viewBox="0 0 24 30">
+                <path d="M12 0C5.4 0 0 5.2 0 11.6 0 20 12 30 12 30s12-10 12-18.4C24 5.2 18.6 0 12 0z"
+                  fill="var(--success)" />
+                <circle cx="12" cy="11.5" r="4.4" fill="#fff" />
+              </svg>
+              <svg class="pin" viewBox="0 0 24 30" style="height:28px;width:28px;">
+                <path d="M12 0C5.4 0 0 5.2 0 11.6 0 20 12 30 12 30s12-10 12-18.4C24 5.2 18.6 0 12 0z"
+                  fill="var(--gps)" />
+                <circle cx="12" cy="11.5" r="4.4" fill="#fff" />
+              </svg>
+              <svg class="pin" viewBox="0 0 24 30" style="height:24px;width:24px;">
+                <path d="M12 0C5.4 0 0 5.2 0 11.6 0 20 12 30 12 30s12-10 12-18.4C24 5.2 18.6 0 12 0z"
+                  fill="var(--warning)" />
+                <circle cx="12" cy="11.5" r="4.4" fill="#fff" />
+              </svg>
+            </div>
+          </div>
+        </article>
+
+        <article class="tile tile--sm">
+          <div class="tile-body">
+            <h3>Nhật ký hành trình</h3>
+            <p>Lưu lại cung đường đã đi, xuất file GPX cho Garmin, Strava hay Google Earth.</p>
+          </div>
+          <div class="tile-visual">
+            <div class="route-chip-row">
+              <div class="stat-chip"><b>268km</b><span>Quãng đường</span></div>
+              <div class="stat-chip"><b>41</b><span>km/h TB</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- MOCKUP GALLERY -->
+    <section class="mockups-section" id="mockup">
+      <div class="wrap">
+        <div class="section-head" style="text-align:center;margin-left:auto;margin-right:auto;">
+          <h2 class="section-title" style="margin-left:auto;margin-right:auto;">Giao diện thực tế trên điện thoại</h2>
+          <p class="section-kicker" style="margin-left:auto;margin-right:auto;">Ảnh chụp thật từ bản Beta — đóng khung
+            iPhone để bạn hình dung trải nghiệm trên thiết bị.</p>
+        </div>
+        <div class="mockup-grid">
+          <!-- Real screenshot – Map / SOS -->
+          <div class="mockup-card">
+            <div class="phone-sm">
+              <div class="phone-screen">
+                <img src="app-live-map.jpg" alt="RiderHub – Bản đồ & cảnh báo SOS"
+                  style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+              </div>
+            </div>
+            <h3>Bản đồ &amp; Radar đoàn</h3>
+            <p>Theo dõi vị trí real-time, cảnh báo rớt đoàn và SOS tức thì.</p>
+          </div>
+
+          <!-- SOS – matching real app UI -->
+          <div class="mockup-card">
+            <div class="phone-sm">
+              <div class="phone-screen">
+                <img src="app-sos.png" alt="RiderHub – Cảnh báo SOS"
+                  style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+              </div>
+            </div>
+            <h3>Nút SOS khẩn cấp</h3>
+            <p>Một lần giữ nút — cả đoàn và 113/114/115 đều biết.</p>
+          </div>
+
+          <!-- Fund – matching real app UI -->
+          <div class="mockup-card">
+            <div class="phone-sm">
+              <div class="phone-screen">
+                <img src="app-fund.png" alt="RiderHub – Sổ quỹ tự động"
+                  style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+              </div>
+            </div>
+            <h3>Sổ quỹ tự động</h3>
+            <p>Chia tiền gọn, gợi ý chuyển khoản ít lần nhất.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 STEPS -->
+    <section class="wrap">
+      <div class="section-head">
+        <h2 class="section-title">Bắt đầu chỉ mất một phút</h2>
+        <p class="section-kicker">Không cần cài đặt phức tạp — tạo hồ sơ, mời bạn bè, và lên đường.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <p class="step-num"></p>
+          <h3>Tạo hồ sơ biker</h3>
+          <p>Nhập tên, chiến mã (xe) và biển số. Xong trong chưa đầy một phút.</p>
+        </div>
+        <div class="step">
+          <p class="step-num"></p>
+          <h3>Tạo đoàn hoặc nhập mã mời</h3>
+          <p>Mỗi tour có một mã riêng — mời cả nhóm cùng lúc chỉ với một mã hoặc mã QR.</p>
+        </div>
+        <div class="step">
+          <p class="step-num"></p>
+          <h3>Lên đường</h3>
+          <p>Cả đoàn hiện trên radar, sẵn sàng cho mọi cung đèo, mọi cung biển.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAFETY -->
+    <section class="safety" id="an-toan">
+      <div class="wrap">
+        <div class="safety-grid">
+          <div>
+            <h2 class="section-title">An toàn là ưu tiên số một</h2>
+            <p class="section-kicker">RiderHub chia khoảng cách trong đoàn thành 4 mức, để ai cũng biết khi nào cần giảm
+              ga chờ nhau.</p>
+            <div class="zone-list">
+              <div class="zone-row"><i class="zone-dot" style="background:var(--success);color:var(--success)"></i><b>An
+                  toàn</b><span>Dưới 500m</span></div>
+              <div class="zone-row"><i class="zone-dot"
+                  style="background:var(--warning);color:var(--warning)"></i><b>Chú ý</b><span>500m – 1km</span></div>
+              <div class="zone-row"><i class="zone-dot" style="background:#F97316;color:#F97316"></i><b>Cảnh
+                  báo</b><span>1km – 1,5km</span></div>
+              <div class="zone-row"><i class="zone-dot" style="background:var(--danger);color:var(--danger)"></i><b>Rớt
+                  đoàn</b><span>Trên 1,5km</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="hotlines">
+              <a class="hotline" href="tel:113">
+                <span class="hotline-num">113</span>
+                <span class="hotline-text"><b>Công an</b><span>Trật tự, an ninh trên đường</span></span>
+              </a>
+              <a class="hotline" href="tel:114">
+                <span class="hotline-num">114</span>
+                <span class="hotline-text"><b>Cứu hỏa &amp; cứu nạn</b><span>Tai nạn, sự cố cần giải cứu</span></span>
+              </a>
+              <a class="hotline" href="tel:115">
+                <span class="hotline-num">115</span>
+                <span class="hotline-text"><b>Cấp cứu y tế</b><span>Chấn thương cần hỗ trợ y tế</span></span>
+              </a>
+            </div>
+            <p class="safety-note">RiderHub giúp kết nối nhanh tới đoàn của bạn và tới các số khẩn cấp quốc gia — không
+              thay thế cho lực lượng chức năng hay dịch vụ cứu hộ chuyên nghiệp.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="wrap" id="cau-hoi">
+      <div class="section-head">
+        <h2 class="section-title">Câu hỏi thường gặp</h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>RiderHub có miễn phí không?</summary>
+          <p>Có. Toàn bộ tính năng cốt lõi — radar, bản đồ trực tiếp, SOS, sổ quỹ và điểm cứu hộ — miễn phí trong giai
+            đoạn Beta.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Ứng dụng có cần Internet và định vị liên tục không?</summary>
+          <p>Có. Các tính năng theo thời gian thực cần kết nối Internet và GPS để đồng bộ vị trí giữa các thành viên
+            trong đoàn.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Vị trí của tôi có bị chia sẻ ngoài ý muốn không?</summary>
+          <p>Không. Vị trí chỉ được chia sẻ với đoàn khi chuyến đi đang diễn ra và bạn đã đồng ý — rời đoàn là dừng chia
+            sẻ ngay lập tức.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Bao giờ có bản iOS?</summary>
+          <p>RiderHub được xây trên nền tảng đa hệ điều hành nên bản iOS đã nằm trong lộ trình tiếp theo — Beta Android
+            là bước khởi đầu.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Có thể dùng offline không?</summary>
+          <p>Một số tính năng cơ bản (xem nhật ký, sổ quỹ đã lưu) vẫn dùng được offline. Radar và SOS realtime cần có
+            kết nối mạng.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="wrap" id="beta">
+      <div class="final-cta">
+        <h2>Chuyến đi tiếp theo, đừng để ai lẻ loi.</h2>
+        <p>Đang mở Beta trên Android · Miễn phí hoàn toàn</p>
+        <div class="hero-ctas">
+          <a href="#" class="btn btn--on-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18">
+              <path d="M12 3v12M7 10l5 5 5-5" />
+              <path d="M5 19h14" />
+            </svg>
+            Tải bản Beta Android
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footer-top">
+        <div>
+          <a href="#top" class="brand">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="logo.jpg" alt="RiderHub" width="36" height="36"
+                style="width:100%;height:100%;object-fit:contain;border-radius:11px;display:block;">
+            </span>
+            RiderHub
+          </a>
+          <p class="footer-tagline">Ride together. Never lose the group. Ứng dụng đồng hành cho các đoàn xe máy Việt
+            Nam.</p>
+        </div>
+        <nav class="footer-links" aria-label="Liên kết chân trang">
+          <a href="#tinh-nang">Tính năng</a>
+          <a href="#mockup">Giao diện</a>
+          <a href="#an-toan">An toàn</a>
+          <a href="#cau-hoi">Câu hỏi thường gặp</a>
+          <a href="#" rel="noopener">Facebook</a>
+          <a href="#" rel="noopener">Zalo</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 RiderHub. Bản Beta dành cho Android.</span>
+        <span>Khẩn cấp: 113 · 114 · 115</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle — trạng thái ban đầu đã được set trước khi vẽ trang (xem script trong <head>)
+    const root = document.documentElement;
+    const btn = document.getElementById('theme-toggle');
+
+    function currentTheme() {
+      const attr = root.getAttribute('data-theme');
+      if (attr === 'light' || attr === 'dark') return attr;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    btn?.addEventListener('click', () => {
+      const next = currentTheme() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('rh-theme', next); } catch (e) { }
+    });
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.addEventListener('click', () => {
+        document.getElementById('nav-toggle').checked = false;
+      });
+    });
+  </script>
+</body>
+
+</html>
