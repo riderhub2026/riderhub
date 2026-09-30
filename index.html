@@ -17,7 +17,7 @@
   <title>RiderHub – Không ai rớt đoàn, không ai đi một mình</title>
   <link rel="icon" href="logo.jpg" type="image/jpeg">
   <meta name="description"
-    content="RiderHub giữ cả đoàn xe máy kết nối theo thời gian thực: radar khoảng cách, cảnh báo rớt đoàn, SOS khẩn cấp, chia tiền tự động và điểm cứu hộ cộng đồng. Đang mở Beta trên Android.">
+    content="RiderHub cho cả đoàn xe máy thấy nhau trên một bản đồ, báo khi có người tụt lại, có nút SOS, tự chia tiền chuyến đi và chỉ điểm cứu hộ dọc đường. Đang thử nghiệm miễn phí trên Android.">
   <meta name="theme-color" content="#FF6B35">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1902,13 +1902,132 @@
       color: var(--text-soft);
       font-size: .82rem;
     }
+      /* ============ 3D CINEMATIC HERO ============ */
+    #prog{position:fixed;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,var(--primary),#ffb27a);transform-origin:0 50%;transform:scaleX(0);z-index:60;pointer-events:none}
+    .hero.hero--3d{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:calc(var(--header-h) + 32px) 0 110px;margin-top:calc(var(--header-h) * -1);background:#090c14;color:#F4F6F8;isolation:isolate}
+    #rh3d{position:absolute;inset:0;width:100%;height:100%;z-index:-2;display:block}
+    .hero--3d::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(9,12,20,.9) 0%,rgba(9,12,20,.5) 42%,rgba(9,12,20,0) 74%),linear-gradient(0deg,var(--bg) 0%,rgba(0,0,0,0) 16%),radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.5) 100%)}
+    @media(max-width:760px){.hero--3d::before{background:linear-gradient(180deg,rgba(9,12,20,.82) 0%,rgba(9,12,20,.55) 60%,rgba(9,12,20,.25) 100%),linear-gradient(0deg,var(--bg) 0%,rgba(0,0,0,0) 14%)}}
+    .hero--3d .hero-grid{grid-template-columns:1fr}
+    .hero--3d .hero-grid>div:first-child{max-width:640px}
+    .hero--3d h1{color:#fff;font-size:clamp(2.4rem,6.2vw,4.5rem);text-shadow:0 4px 40px rgba(0,0,0,.55)}
+    .hero--3d h1 .hl{background:linear-gradient(100deg,#ff6b35,#ffc09a 45%,#ff6b35);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rhSheen 4.5s linear infinite}
+    @keyframes rhSheen{to{background-position:-200% 0}}
+    .hero--3d p.lede{color:rgba(255,255,255,.82)}
+    .hero--3d .hero-badge{background:rgba(255,107,53,.18);color:#ff9a6b;border:1px solid rgba(255,107,53,.35)}
+    .hero--3d .hero-facts{border-top-color:rgba(255,255,255,.16)}
+    .hero--3d .hero-fact{color:rgba(255,255,255,.78)}
+    .hero--3d .btn--ghost{color:#fff;border-color:rgba(255,255,255,.35)}
+    .hero--3d .btn--ghost:hover{background:rgba(255,255,255,.1);border-color:#fff}
+    .btn.boost{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+    .btn.boost.on{background:var(--primary);color:var(--primary-ink);border-color:var(--primary);box-shadow:0 0 32px -4px var(--primary)}
+    .hero--3d .hero-visual{position:absolute;right:max(24px,5vw);bottom:84px;min-height:0;display:none}
+    @media(min-width:1100px){.hero--3d .hero-visual{display:flex}}
+    .hero--3d .phone-frame{width:168px;animation:rhFloat 6s ease-in-out infinite}
+    @keyframes rhFloat{0%,100%{transform:rotate(-2.5deg) translateY(0)}50%{transform:rotate(-1deg) translateY(-14px)}}
+    .hud{position:absolute;left:0;right:0;bottom:26px;pointer-events:none}
+    .hud-in{display:flex;align-items:flex-end;gap:18px}
+    .hud-speed{display:flex;align-items:baseline;gap:6px;color:#fff}
+    .hud-speed b{font-size:2.4rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;min-width:3ch;line-height:1}
+    .hud-speed small{font-size:.8rem;font-weight:700;color:rgba(255,255,255,.6)}
+    .hud-bar{width:clamp(90px,16vw,170px);height:4px;border-radius:4px;background:rgba(255,255,255,.16);overflow:hidden;margin-bottom:8px}
+    .hud-bar i{display:block;height:100%;background:linear-gradient(90deg,#22C55E,#F59E0B,#ff6b35,#EF4444);transform-origin:0 50%;transform:scaleX(0)}
+    .hud-cue{margin-left:auto;margin-bottom:6px;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:10px}
+    .hud-cue::after{content:"";width:1.5px;height:30px;background:linear-gradient(#fff,transparent);animation:rhCue 1.8s ease-in-out infinite}
+    @keyframes rhCue{0%{transform:scaleY(0);transform-origin:0 0}50%{transform:scaleY(1);transform-origin:0 0}51%{transform-origin:0 100%}100%{transform:scaleY(0);transform-origin:0 100%}}
+    header.site.on-hero{background:transparent;border-bottom-color:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+    header.site.on-hero .brand,header.site.on-hero .theme-btn{color:#fff}
+    header.site.on-hero .theme-btn,header.site.on-hero .nav-toggle-btn,header.site.on-hero .btn--ghost{border-color:rgba(255,255,255,.3)}
+    header.site.on-hero .btn--ghost{color:#fff}
+    header.site.on-hero .nav-toggle-btn span,header.site.on-hero .nav-toggle-btn span::before,header.site.on-hero .nav-toggle-btn span::after{background:#fff}
+    @media(min-width:901px){header.site.on-hero .nav-links a{color:rgba(255,255,255,.78)}header.site.on-hero .nav-links a:hover{color:#fff}}
+    .js .reveal{opacity:0;transform:translateY(30px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)}
+    .js .reveal.in{opacity:1;transform:none}
+    .tile{position:relative}
+    .tile::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(255,107,53,.16),transparent 62%)}
+    .tile:hover::after{opacity:1}
+
+    /* ============ FULL-PAGE 3D (đêm điện ảnh) ============ */
+    html:root:not(.x){--bg:#090c14;--surface:rgba(16,21,30,.66);--surface-raised:rgba(24,30,42,.74);--border:rgba(255,255,255,.12);--text:#F4F6F8;--text-soft:#AEB6C3;--primary-soft:#3A2013;--gps:#3B82F6;--success:#22C55E;--warning:#F59E0B;--danger:#EF4444;--shadow:0 24px 56px -22px rgba(0,0,0,.65);--shadow-lg:0 36px 72px -28px rgba(0,0,0,.75);color-scheme:dark}
+    html{background:#090c14}
+    body{background:transparent}
+    .theme-btn{display:none}
+    #rh3d{position:fixed;inset:0;width:100%;height:100%;z-index:-1}
+    body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 50%,rgba(0,0,0,.55) 100%)}
+    section{position:relative}
+    .hero.hero--3d{background:transparent}
+    .hero--3d::before{background:linear-gradient(90deg,rgba(9,12,20,.86) 0%,rgba(9,12,20,.4) 46%,rgba(9,12,20,0) 76%)}
+    @media(max-width:760px){.hero--3d::before{background:linear-gradient(180deg,rgba(9,12,20,.8) 0%,rgba(9,12,20,.5) 65%,rgba(9,12,20,.2) 100%)}}
+    .hero--3d .phone-frame::before{width:12px;height:12px;top:21px;border-radius:50%}
+    h2.section-title{text-shadow:0 4px 32px rgba(0,0,0,.6)}
+    .section-kicker{color:#C3CAD6}
+    .mockups-section,.safety{background:linear-gradient(180deg,transparent,rgba(9,12,20,.6) 16%,rgba(9,12,20,.6) 84%,transparent);border:0}
+    .tile,.hotline,.faq-item,.problem-row,.step{-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02)),rgba(13,17,25,.62);border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow)}
+    .tile,.hotline,.faq-item,.problem-row,.step,.final-cta{will-change:transform;transition:transform .25s ease,border-color .25s ease,box-shadow .3s ease}
+    .tile:hover,.hotline:hover,.step:hover{border-color:rgba(255,107,53,.55);box-shadow:0 30px 60px -24px rgba(0,0,0,.8),0 0 40px -10px rgba(255,107,53,.35)}
+    .problems-list{border-top:0;display:grid;gap:14px}
+    .problem-row{padding:22px 26px;border-radius:var(--r-lg)}
+    .steps{gap:16px}
+    .step{border-top:2px solid var(--primary);border-radius:var(--r-lg);padding:28px 24px 26px}
+    .faq-list{display:grid;gap:12px}
+    .faq-item{border-radius:var(--r-md);padding:2px 20px}
+    .tile--radar .tile-visual{perspective:520px}
+    .tile--radar .tile-visual svg{transform:rotateX(54deg) scale(1.15);filter:drop-shadow(0 22px 18px rgba(0,0,0,.6))}
+    .mockup-grid{perspective:1500px}
+    @media(min-width:900px){
+      .mockup-card{transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+      .mockup-card:nth-child(1){transform:rotateY(18deg) translateZ(-40px)}
+      .mockup-card:nth-child(3){transform:rotateY(-18deg) translateZ(-40px)}
+      .mockup-card:nth-child(2){transform:translateZ(50px) translateY(-14px)}
+      .mockup-card:hover{transform:rotateY(0) translateZ(80px) translateY(-8px)}
+    }
+    .mockup-card .phone-sm{transition:box-shadow .4s ease;box-shadow:0 40px 70px -24px rgba(0,0,0,.85),0 0 60px -20px rgba(255,107,53,.4),0 0 0 1px rgba(255,255,255,.12)}
+    .mockup-card h3{margin-top:22px}
+    .final-cta{box-shadow:0 50px 90px -30px rgba(255,107,53,.5),0 0 0 1px rgba(255,255,255,.14) inset}
+    footer{background:rgba(9,12,20,.72);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+    /* ---- sửa lệch bố cục ---- */
+    .hero--3d .hero-grid{width:100%}
+    .hero--3d .hero-grid>div:first-child{max-width:720px}
+    .hero--3d h1,h2.section-title{text-wrap:balance}
+    h2.section-title{max-width:26ch}
+    .settle-mid{white-space:nowrap}
+    .hero--3d .hero-ctas .btn{flex:0 0 auto}
+    @media(max-width:760px){
+      .hud-cue{display:none}
+      .hero.hero--3d{padding-bottom:120px}
+      .hero--3d .hero-ctas{flex-direction:column;align-items:stretch}
+      .hero--3d .hero-ctas .btn{width:100%}
+    }
+    .hero--3d h1 .hl{display:block;max-width:14em}
+
+  
+    /* ---- Mockup trên mobile: băng chuyền vuốt ngang, phone giữa nổi bật, hai bên ló ra ---- */
+    .mockup-tabs{display:none}
+    @media(max-width:759px){
+      .mockups-section{--pw:clamp(190px,58vw,250px)}
+      .mockup-grid{position:relative;display:flex;justify-content:flex-start;align-items:flex-start;gap:14px;
+        width:100vw;margin-left:calc(50% - 50vw);padding:14px calc(50vw - var(--pw)/2) 6px;
+        overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;perspective:none}
+      .mockup-grid::-webkit-scrollbar{display:none}
+      .mockup-card{--a:1;flex:0 0 var(--pw);scroll-snap-align:center;
+        transform:scale(calc(.84 + .16*var(--a)));opacity:calc(.45 + .55*var(--a))}
+      .mockup-card .phone-sm{width:100%}
+      .mockup-card h3,.mockup-card p{opacity:var(--a)}
+      .mockup-tabs{display:flex;justify-content:center;gap:8px;margin-top:20px}
+      .mockup-tab{min-height:44px;padding:0 18px;border-radius:999px;font-size:.88rem;font-weight:600;
+        color:var(--text-soft);border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);transition:background .2s,color .2s}
+      .mockup-tab[aria-current="true"]{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+    }
   </style>
+<script>document.documentElement.className+=' js'</script>
 </head>
 
 <body>
+  <canvas id="rh3d" aria-hidden="true"></canvas>
+  <div id="prog" aria-hidden="true"></div>
   <a href="#main" class="skip-link">Bỏ qua tới nội dung chính</a>
 
-  <header class="site">
+  <header class="site on-hero">
     <div class="wrap">
       <input type="checkbox" id="nav-toggle" class="nav-toggle-input" aria-hidden="true">
       <div class="site-nav">
@@ -1924,7 +2043,7 @@
           <a href="#mockup">Giao diện</a>
           <a href="#an-toan">An toàn</a>
           <a href="#cau-hoi">Câu hỏi</a>
-          <a href="#beta">Tải Beta</a>
+          <a href="#beta">Tải app</a>
         </nav>
         <div class="nav-cta">
           <button class="theme-btn" id="theme-toggle" aria-label="Chuyển giao diện sáng/tối" type="button">
@@ -1937,7 +2056,7 @@
               <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5z" />
             </svg>
           </button>
-          <a href="#beta" class="btn btn--ghost">Tải Beta</a>
+          <a href="#beta" class="btn btn--ghost">Tải app</a>
           <label for="nav-toggle" class="nav-toggle-btn" aria-label="Mở menu"><span></span></label>
         </div>
       </div>
@@ -1948,22 +2067,22 @@
 
     <!-- HERO -->
     <div id="top"></div>
-    <section class="hero">
+    <section class="hero hero--3d" id="hero" data-shot="0">
       <div class="wrap hero-grid">
         <div>
-          <span class="hero-badge">Beta Android đang mở</span>
-          <h1>Không ai rớt đoàn.<br>Không ai lẻ loi giữa đường.</h1>
-          <p class="lede">RiderHub giữ cả đoàn xe kết nối theo thời gian thực — vị trí từng người, cảnh báo rớt đoàn, sổ
-            quỹ chung và một nút SOS khi có chuyện — để chuyến đi nào cũng trọn vẹn.</p>
+          <span class="hero-badge">Đang thử nghiệm trên Android</span>
+          <h1>Không ai rớt đoàn.<br><span class="hl">Không ai lẻ loi giữa đường.</span></h1>
+          <p class="lede">RiderHub cho cả đoàn xe máy thấy nhau trên một tấm bản đồ. Ai tụt lại, lạc đường hay gặp sự cố, cả nhóm biết ngay để quay lại đón.</p>
           <div class="hero-ctas">
             <a href="#beta" class="btn btn--primary">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M12 3v12M7 10l5 5 5-5" />
                 <path d="M5 19h14" />
               </svg>
-              Tải bản Beta Android
+              Tải bản thử nghiệm Android
             </a>
             <a href="#tinh-nang" class="btn btn--ghost">Xem tính năng</a>
+            <button type="button" class="btn btn--ghost boost" id="boost" aria-label="Giữ để tăng tốc cho đoàn xe 3D"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Giữ để tăng tốc</button>
           </div>
           <div class="hero-facts">
             <span class="hero-fact">
@@ -1971,14 +2090,14 @@
                 <circle cx="12" cy="12" r="9" />
                 <path d="M12 7v5l3 2" />
               </svg>
-              Định vị đoàn theo thời gian thực
+              Thấy vị trí cả nhóm ngay lúc đó
             </span>
             <span class="hero-fact">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path
                   d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .7 2.9a2 2 0 0 1-.4 2.1L8 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.4 1.9.6 2.9.7a2 2 0 0 1 1.7 2z" />
               </svg>
-              Gọi thẳng 113 · 114 · 115
+              Gọi nhanh 113 · 114 · 115 trong app
             </span>
           </div>
         </div>
@@ -1993,65 +2112,59 @@
           </div>
         </div>
       </div>
+      <div class="hud" aria-hidden="true"><div class="wrap hud-in"><div class="hud-speed"><b id="hud-kmh">0</b><small>km/h</small></div><div class="hud-bar"><i id="hud-bar"></i></div><span class="hud-cue">Cuộn xuống</span></div></div>
     </section>
 
     <!-- PROBLEMS -->
-    <section class="wrap">
+    <section class="wrap" data-shot="2">
       <div class="section-head">
-        <h2 class="section-title">Những nỗi lo quen thuộc của dân phượt đoàn</h2>
-        <p class="section-kicker">Chạy đoàn càng đông, rủi ro càng nhiều. RiderHub xử lý gọn 4 vấn đề khiến hội đi phượt
-          hay lo lắng nhất.</p>
+        <h2 class="section-title">Đi đoàn vui, nhưng ai cũng từng lo mấy chuyện này</h2>
+        <p class="section-kicker">RiderHub làm ra để giải quyết đúng 4 nỗi lo hay gặp nhất khi chạy xe theo nhóm.</p>
       </div>
       <div class="problems-list">
         <div class="problem-row">
-          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Lạc đoàn, rớt lại giữa đèo mà không ai hay
-            biết.</div>
+          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Chạy một đoạn quay lại không thấy ai, không biết cả nhóm đang ở đâu.</div>
           <div class="p-fix"><span class="p-mark p-mark--fix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="3">
                 <path d="M4 12l5 5L20 6" />
-              </svg></span>Radar 360° &amp; bản đồ trực tiếp báo động ngay khi có người rớt đoàn.</div>
+              </svg></span>Cả nhóm thấy nhau trên một bản đồ. Ai tụt lại quá xa, app báo cho mọi người.</div>
         </div>
         <div class="problem-row">
-          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Xe hỏng, thủng lốp giữa đường không biết tìm ai
-            giúp.</div>
+          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Xe hỏng, thủng lốp giữa đường mà không biết tiệm nào gần đó.</div>
           <div class="p-fix"><span class="p-mark p-mark--fix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="3">
                 <path d="M4 12l5 5L20 6" />
-              </svg></span>Mạng lưới điểm cứu hộ do chính cộng đồng biker xác thực.</div>
+              </svg></span>Xem điểm vá xe, cây xăng, trạm y tế gần bạn, do các biker từng ghé qua xác nhận.</div>
         </div>
         <div class="problem-row">
-          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Tai nạn, sự cố cần ứng cứu gấp giữa nơi hẻo
-            lánh.</div>
+          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Có chuyện ở nơi vắng vẻ, không ai hay để tới giúp.</div>
           <div class="p-fix"><span class="p-mark p-mark--fix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="3">
                 <path d="M4 12l5 5L20 6" />
-              </svg></span>Nút SOS giữ 2 giây — báo động cả đoàn và gọi thẳng 113/114/115.</div>
+              </svg></span>Giữ nút SOS 2 giây: cả đoàn nhận vị trí của bạn, và bạn gọi được 113, 114, 115 ngay.</div>
         </div>
         <div class="problem-row">
-          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Tiền xăng, tiền ăn, tiền phòng nghỉ chia mãi
-            vẫn rối.</div>
+          <div class="p-issue"><span class="p-mark p-mark--issue"></span>Cuối chuyến ngồi cộng trừ tiền xăng, tiền ăn, tiền phòng mãi không xong.</div>
           <div class="p-fix"><span class="p-mark p-mark--fix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="3">
                 <path d="M4 12l5 5L20 6" />
-              </svg></span>Sổ quỹ tự động chia và gợi ý chuyển khoản với số lần ít nhất.</div>
+              </svg></span>Ghi khoản chi vào app, app tự tính ai nợ ai và gợi ý chuyển khoản sao cho ít lần nhất.</div>
         </div>
       </div>
     </section>
 
     <!-- FEATURES BENTO -->
-    <section class="wrap" id="tinh-nang">
+    <section class="wrap" id="tinh-nang" data-shot="5">
       <div class="section-head">
-        <h2 class="section-title">Mọi thứ một đoàn xe cần, trong một ứng dụng</h2>
-        <p class="section-kicker">Từ lúc rủ nhau lên đường đến khi quyết toán chi phí cuối chuyến — RiderHub đi cùng cả
-          đoàn suốt hành trình.</p>
+        <h2 class="section-title">Một app cho cả chuyến đi, từ lúc rủ nhau đến lúc chia tiền</h2>
+        <p class="section-kicker">Mọi thứ nhóm bạn cần khi chạy xe đường dài nằm gọn ở một chỗ.</p>
       </div>
 
       <div class="bento">
         <article class="tile tile--lg tile--radar">
           <div class="tile-body">
-            <h3>Nhìn thấy cả đoàn, mọi lúc</h3>
-            <p>Radar khoảng cách 360° và bản đồ trực tiếp cho biết chính xác ai đang ở đâu, cách bạn bao xa — cách nhau
-              quá 1,5&nbsp;km là báo động ngay.</p>
+            <h3>Thấy cả nhóm trên một màn hình</h3>
+            <p>Bản đồ và vòng radar cho bạn biết từng người đang ở đâu, cách bạn bao xa. Ai cách quá 1,5&nbsp;km, app báo ngay.</p>
           </div>
           <div class="tile-visual">
             <svg viewBox="0 0 240 200" width="220" height="180">
@@ -2076,9 +2189,8 @@
 
         <article class="tile tile--lg tile--sos">
           <div class="tile-body">
-            <h3>Gặp chuyện, cả đoàn biết ngay</h3>
-            <p>Giữ nút 2 giây để phát báo động khẩn cấp kèm vị trí GPS tới toàn đoàn, đồng thời kết nối nhanh tới 113,
-              114, 115.</p>
+            <h3>Gặp chuyện, một nút gọi cả đoàn</h3>
+            <p>Giữ nút SOS 2 giây, cả nhóm nhận báo động kèm vị trí của bạn. App cũng có sẵn nút gọi nhanh 113, 114, 115.</p>
           </div>
           <div class="tile-visual">
             <div class="sos-btn-wrap">
@@ -2095,8 +2207,8 @@
 
         <article class="tile tile--sm">
           <div class="tile-body">
-            <h3>Điều hành đoàn xe</h3>
-            <p>Tạo tour trong vài giây, mời cả nhóm chỉ bằng một mã 8 ký tự hoặc quét QR.</p>
+            <h3>Lập đoàn nhanh gọn</h3>
+            <p>Tạo chuyến đi, mời bạn bè bằng mã 8 ký tự hoặc quét QR. Chọn ai dẫn đầu, ai chạy cuối để giữ đoàn.</p>
           </div>
           <div class="tile-visual" style="flex-direction:column;gap:10px;align-items:flex-start;">
             <span class="invite-chip">DALAT2026</span>
@@ -2109,8 +2221,8 @@
 
         <article class="tile tile--sm">
           <div class="tile-body">
-            <h3>Sổ quỹ &amp; quyết toán</h3>
-            <p>Ghi chi tiêu chung, RiderHub tự chia và gợi ý ai chuyển cho ai — ít lần chuyển khoản nhất.</p>
+            <h3>Chia tiền chuyến đi</h3>
+            <p>Ai trả gì cứ ghi vào app. App tự tính ai nợ ai và gợi ý cách chuyển khoản ít lần nhất.</p>
           </div>
           <div class="tile-visual">
             <div class="settle-row">
@@ -2126,8 +2238,8 @@
 
         <article class="tile tile--sm">
           <div class="tile-body">
-            <h3>Điểm cứu hộ cộng đồng</h3>
-            <p>Vá xe, cây xăng, trạm y tế dọc đường — do chính biker xác thực, tin được.</p>
+            <h3>Điểm cứu hộ dọc đường</h3>
+            <p>Tiệm vá xe, cây xăng, trạm y tế do các biker từng ghé qua xác nhận, nên đáng tin.</p>
           </div>
           <div class="tile-visual">
             <div class="pin-cluster" aria-hidden="true">
@@ -2152,13 +2264,13 @@
 
         <article class="tile tile--sm">
           <div class="tile-body">
-            <h3>Nhật ký hành trình</h3>
-            <p>Lưu lại cung đường đã đi, xuất file GPX cho Garmin, Strava hay Google Earth.</p>
+            <h3>Nhật ký chuyến đi</h3>
+            <p>Tự lưu cung đường bạn đã chạy. Xuất file để xem lại trên Garmin, Strava hay Google Earth.</p>
           </div>
           <div class="tile-visual">
             <div class="route-chip-row">
               <div class="stat-chip"><b>268km</b><span>Quãng đường</span></div>
-              <div class="stat-chip"><b>41</b><span>km/h TB</span></div>
+              <div class="stat-chip"><b>41</b><span>km/h trung bình</span></div>
             </div>
           </div>
         </article>
@@ -2166,12 +2278,11 @@
     </section>
 
     <!-- MOCKUP GALLERY -->
-    <section class="mockups-section" id="mockup">
+    <section class="mockups-section" id="mockup" data-shot="3">
       <div class="wrap">
         <div class="section-head" style="text-align:center;margin-left:auto;margin-right:auto;">
-          <h2 class="section-title" style="margin-left:auto;margin-right:auto;">Giao diện thực tế trên điện thoại</h2>
-          <p class="section-kicker" style="margin-left:auto;margin-right:auto;">Ảnh chụp thật từ bản Beta — đóng khung
-            iPhone để bạn hình dung trải nghiệm trên thiết bị.</p>
+          <h2 class="section-title" style="margin-left:auto;margin-right:auto;">Giao diện app thật</h2>
+          <p class="section-kicker" style="margin-left:auto;margin-right:auto;">Ảnh chụp màn hình từ bản thử nghiệm trên Android: bản đồ, SOS và sổ quỹ.</p>
         </div>
         <div class="mockup-grid">
           <!-- Real screenshot – Map / SOS -->
@@ -2182,8 +2293,8 @@
                   style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
               </div>
             </div>
-            <h3>Bản đồ &amp; Radar đoàn</h3>
-            <p>Theo dõi vị trí real-time, cảnh báo rớt đoàn và SOS tức thì.</p>
+            <h3>Bản đồ cả đoàn</h3>
+            <p>Xem mọi người đang ở đâu và ai đang tụt lại.</p>
           </div>
 
           <!-- SOS – matching real app UI -->
@@ -2194,8 +2305,8 @@
                   style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
               </div>
             </div>
-            <h3>Nút SOS khẩn cấp</h3>
-            <p>Một lần giữ nút — cả đoàn và 113/114/115 đều biết.</p>
+            <h3>Nút SOS</h3>
+            <p>Giữ một lần, cả đoàn nhận báo động kèm vị trí của bạn.</p>
           </div>
 
           <!-- Fund – matching real app UI -->
@@ -2206,46 +2317,50 @@
                   style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
               </div>
             </div>
-            <h3>Sổ quỹ tự động</h3>
-            <p>Chia tiền gọn, gợi ý chuyển khoản ít lần nhất.</p>
+            <h3>Sổ quỹ</h3>
+            <p>Ghi chi tiêu chung, app tự tính ai nợ ai.</p>
           </div>
+        </div>
+        <div class="mockup-tabs" role="group" aria-label="Chọn màn hình để xem">
+          <button type="button" class="mockup-tab" aria-current="true">Bản đồ</button>
+          <button type="button" class="mockup-tab" aria-current="false">SOS</button>
+          <button type="button" class="mockup-tab" aria-current="false">Sổ quỹ</button>
         </div>
       </div>
     </section>
 
     <!-- 3 STEPS -->
-    <section class="wrap">
+    <section class="wrap" data-shot="4">
       <div class="section-head">
-        <h2 class="section-title">Bắt đầu chỉ mất một phút</h2>
-        <p class="section-kicker">Không cần cài đặt phức tạp — tạo hồ sơ, mời bạn bè, và lên đường.</p>
+        <h2 class="section-title">Bắt đầu trong một phút</h2>
+        <p class="section-kicker">Không cần cài đặt rườm rà. Làm đúng 3 bước là chạy.</p>
       </div>
       <div class="steps">
         <div class="step">
           <p class="step-num"></p>
-          <h3>Tạo hồ sơ biker</h3>
-          <p>Nhập tên, chiến mã (xe) và biển số. Xong trong chưa đầy một phút.</p>
+          <h3>Tạo hồ sơ</h3>
+          <p>Nhập tên, loại xe và biển số xe của bạn.</p>
         </div>
         <div class="step">
           <p class="step-num"></p>
-          <h3>Tạo đoàn hoặc nhập mã mời</h3>
-          <p>Mỗi tour có một mã riêng — mời cả nhóm cùng lúc chỉ với một mã hoặc mã QR.</p>
+          <h3>Lập đoàn hoặc nhập mã mời</h3>
+          <p>Người dẫn đoàn tạo chuyến đi rồi gửi mã (hoặc mã QR). Mọi người nhập mã là vào đoàn.</p>
         </div>
         <div class="step">
           <p class="step-num"></p>
           <h3>Lên đường</h3>
-          <p>Cả đoàn hiện trên radar, sẵn sàng cho mọi cung đèo, mọi cung biển.</p>
+          <p>Cả đoàn hiện trên bản đồ, và app sẽ báo nếu có ai tụt lại.</p>
         </div>
       </div>
     </section>
 
     <!-- SAFETY -->
-    <section class="safety" id="an-toan">
+    <section class="safety" id="an-toan" data-shot="1">
       <div class="wrap">
         <div class="safety-grid">
           <div>
-            <h2 class="section-title">An toàn là ưu tiên số một</h2>
-            <p class="section-kicker">RiderHub chia khoảng cách trong đoàn thành 4 mức, để ai cũng biết khi nào cần giảm
-              ga chờ nhau.</p>
+            <h2 class="section-title">Biết lúc nào cần chạy chậm chờ nhau</h2>
+            <p class="section-kicker">App đo khoảng cách giữa bạn và mọi người trong đoàn, chia thành 4 mức màu. Sang màu đỏ nghĩa là có người đã tụt lại.</p>
             <div class="zone-list">
               <div class="zone-row"><i class="zone-dot" style="background:var(--success);color:var(--success)"></i><b>An
                   toàn</b><span>Dưới 500m</span></div>
@@ -2261,70 +2376,65 @@
             <div class="hotlines">
               <a class="hotline" href="tel:113">
                 <span class="hotline-num">113</span>
-                <span class="hotline-text"><b>Công an</b><span>Trật tự, an ninh trên đường</span></span>
+                <span class="hotline-text"><b>Công an</b><span>Mất an ninh, va chạm cần công an tới</span></span>
               </a>
               <a class="hotline" href="tel:114">
                 <span class="hotline-num">114</span>
-                <span class="hotline-text"><b>Cứu hỏa &amp; cứu nạn</b><span>Tai nạn, sự cố cần giải cứu</span></span>
+                <span class="hotline-text"><b>Cứu hỏa &amp; cứu nạn</b><span>Cháy nổ, tai nạn cần giải cứu</span></span>
               </a>
               <a class="hotline" href="tel:115">
                 <span class="hotline-num">115</span>
-                <span class="hotline-text"><b>Cấp cứu y tế</b><span>Chấn thương cần hỗ trợ y tế</span></span>
+                <span class="hotline-text"><b>Cấp cứu y tế</b><span>Có người bị thương cần cấp cứu</span></span>
               </a>
             </div>
-            <p class="safety-note">RiderHub giúp kết nối nhanh tới đoàn của bạn và tới các số khẩn cấp quốc gia — không
-              thay thế cho lực lượng chức năng hay dịch vụ cứu hộ chuyên nghiệp.</p>
+            <p class="safety-note">RiderHub giúp bạn báo nhanh cho đoàn và bấm gọi các số khẩn cấp. App không thay thế lực lượng chức năng hay dịch vụ cứu hộ chuyên nghiệp.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- FAQ -->
-    <section class="wrap" id="cau-hoi">
+    <section class="wrap" id="cau-hoi" data-shot="2">
       <div class="section-head">
         <h2 class="section-title">Câu hỏi thường gặp</h2>
       </div>
       <div class="faq-list">
         <details class="faq-item">
           <summary>RiderHub có miễn phí không?</summary>
-          <p>Có. Toàn bộ tính năng cốt lõi — radar, bản đồ trực tiếp, SOS, sổ quỹ và điểm cứu hộ — miễn phí trong giai
-            đoạn Beta.</p>
+          <p>Có. Trong thời gian thử nghiệm, bạn dùng được mọi tính năng mà không mất phí.</p>
         </details>
         <details class="faq-item">
-          <summary>Ứng dụng có cần Internet và định vị liên tục không?</summary>
-          <p>Có. Các tính năng theo thời gian thực cần kết nối Internet và GPS để đồng bộ vị trí giữa các thành viên
-            trong đoàn.</p>
+          <summary>App có cần mạng và GPS không?</summary>
+          <p>Có. Để mọi người thấy vị trí của nhau, điện thoại cần bật GPS và có kết nối Internet.</p>
         </details>
         <details class="faq-item">
-          <summary>Vị trí của tôi có bị chia sẻ ngoài ý muốn không?</summary>
-          <p>Không. Vị trí chỉ được chia sẻ với đoàn khi chuyến đi đang diễn ra và bạn đã đồng ý — rời đoàn là dừng chia
-            sẻ ngay lập tức.</p>
+          <summary>Người lạ có thấy vị trí của tôi không?</summary>
+          <p>Không. Chỉ người trong đoàn của bạn mới thấy, và chỉ khi chuyến đi đang diễn ra và bạn đã đồng ý. Rời đoàn là vị trí ngừng chia sẻ ngay.</p>
         </details>
         <details class="faq-item">
-          <summary>Bao giờ có bản iOS?</summary>
-          <p>RiderHub được xây trên nền tảng đa hệ điều hành nên bản iOS đã nằm trong lộ trình tiếp theo — Beta Android
-            là bước khởi đầu.</p>
+          <summary>Bao giờ có bản cho iPhone?</summary>
+          <p>Bản iPhone nằm trong kế hoạch tiếp theo. Hiện app được thử nghiệm trên Android trước.</p>
         </details>
         <details class="faq-item">
-          <summary>Có thể dùng offline không?</summary>
-          <p>Một số tính năng cơ bản (xem nhật ký, sổ quỹ đã lưu) vẫn dùng được offline. Radar và SOS realtime cần có
-            kết nối mạng.</p>
+          <summary>Không có mạng thì dùng được không?</summary>
+          <p>Dùng được một phần. Bạn vẫn xem được nhật ký chuyến đi và sổ quỹ đã lưu. Còn bản đồ đoàn và SOS cần có mạng.</p>
         </details>
       </div>
     </section>
 
     <!-- FINAL CTA -->
-    <section class="wrap" id="beta">
+    <section class="wrap" id="beta" data-shot="1">
       <div class="final-cta">
-        <h2>Chuyến đi tiếp theo, đừng để ai lẻ loi.</h2>
-        <p>Đang mở Beta trên Android · Miễn phí hoàn toàn</p>
+        <h2>Chuyến sau, đừng để ai chạy một mình.</h2>
+        <p>Đang thử nghiệm trên Android · Miễn phí</p>
         <div class="hero-ctas">
+          <!-- TODO: thay # bằng link tải APK / CH Play thật -->
           <a href="#" class="btn btn--on-primary">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18">
               <path d="M12 3v12M7 10l5 5 5-5" />
               <path d="M5 19h14" />
             </svg>
-            Tải bản Beta Android
+            Tải bản thử nghiệm Android
           </a>
         </div>
       </div>
@@ -2343,25 +2453,24 @@
             </span>
             RiderHub
           </a>
-          <p class="footer-tagline">Ride together. Never lose the group. Ứng dụng đồng hành cho các đoàn xe máy Việt
-            Nam.</p>
+          <p class="footer-tagline">Ứng dụng giúp cả đoàn xe máy chạy cùng nhau, không ai bị bỏ lại.</p>
         </div>
         <nav class="footer-links" aria-label="Liên kết chân trang">
           <a href="#tinh-nang">Tính năng</a>
           <a href="#mockup">Giao diện</a>
           <a href="#an-toan">An toàn</a>
           <a href="#cau-hoi">Câu hỏi thường gặp</a>
-          <a href="#" rel="noopener">Facebook</a>
-          <a href="#" rel="noopener">Zalo</a>
+          <a href="#beta">Tải app</a>
         </nav>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 RiderHub. Bản Beta dành cho Android.</span>
+        <span>© 2026 RiderHub. Bản thử nghiệm dành cho Android.</span>
         <span>Khẩn cấp: 113 · 114 · 115</span>
       </div>
     </div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     // Theme toggle — trạng thái ban đầu đã được set trước khi vẽ trang (xem script trong <head>)
     const root = document.documentElement;
@@ -2385,6 +2494,318 @@
         document.getElementById('nav-toggle').checked = false;
       });
     });
+  </script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var hero = $('#hero'), cv = $('#rh3d'), hdr = $('header.site'), prog = $('#prog');
+  var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* ---------- scroll: progress bar, header, reveal, tile glow ---------- */
+  function onScroll() {
+    var h = document.documentElement.scrollHeight - innerHeight;
+    prog.style.transform = 'scaleX(' + (h > 0 ? scrollY / h : 0) + ')';
+    hdr.classList.toggle('on-hero', scrollY < hero.offsetHeight - 90);
+  }
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target; el.classList.add('in'); io.unobserve(el);
+      setTimeout(function () { el.classList.remove('reveal', 'in'); el.style.transitionDelay = ''; }, 1100);
+    });
+  }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.section-head,.problem-row,.tile,.step,.faq-item,.hotline,.zone-row,.final-cta').forEach(function (el, i) {
+    el.classList.add('reveal'); el.style.transitionDelay = (i % 4) * 70 + 'ms'; io.observe(el);
+  });
+  var rt = 0;
+  addEventListener('scroll', function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () {
+      document.querySelectorAll('.reveal:not(.in)').forEach(function (el) { if (el.getBoundingClientRect().top < innerHeight) { io.unobserve(el); el.classList.remove('reveal'); el.style.transitionDelay = ''; } });
+    }, 250);
+  }, { passive: true });
+  document.querySelectorAll('.tile').forEach(function (t) {
+    t.addEventListener('pointermove', function (e) {
+      var r = t.getBoundingClientRect();
+      t.style.setProperty('--mx', (e.clientX - r.left) + 'px'); t.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  if (matchMedia('(hover:hover) and (pointer:fine)').matches && !reduce) {
+    document.querySelectorAll('.tile,.hotline,.step,.problem-row,.final-cta').forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        el.style.transform = 'perspective(900px) rotateX(' + (-y * 7).toFixed(2) + 'deg) rotateY(' + (x * 9).toFixed(2) + 'deg) translateZ(6px)';
+      });
+      el.addEventListener('pointerleave', function () { el.style.transform = ''; });
+    });
+  }
+
+  /* ---------- 3D ---------- */
+  if (!window.THREE || !cv) return;
+  var T = THREE, ren;
+  try { ren = new T.WebGLRenderer({ canvas: cv, antialias: innerWidth > 700, powerPreference: 'high-performance' }); } catch (e) { return; }
+  var small = innerWidth < 700;
+  ren.setPixelRatio(Math.min(devicePixelRatio || 1, small ? 1.25 : 1.6));
+  ren.toneMapping = T.ACESFilmicToneMapping; ren.toneMappingExposure = 1.15;
+  var FOG = 0x090c14, ADD = T.AdditiveBlending;
+  var sc = new T.Scene(); sc.background = new T.Color(FOG); sc.fog = new T.FogExp2(FOG, .021);
+  var cam = new T.PerspectiveCamera(58, 1, .1, 400);
+  sc.add(new T.HemisphereLight(0x7b8fc0, 0x1a1410, .75));
+  var dl = new T.DirectionalLight(0xff9a66, .95); dl.position.set(-6, 8, 10); sc.add(dl);
+  var rl = new T.DirectionalLight(0x5b8cff, .55); rl.position.set(8, 4, -6); sc.add(rl);
+
+  function mkTex(w, h, fn) { var c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); return new T.CanvasTexture(c); }
+  var glowT = mkTex(64, 64, function (g, w) {
+    var r = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2);
+    r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.25, 'rgba(255,255,255,.35)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = r; g.fillRect(0, 0, w, w);
+  });
+  var trailT = mkTex(16, 128, function (g, w, h) {
+    var r = g.createLinearGradient(0, 0, 0, h);
+    r.addColorStop(0, 'rgba(255,60,40,.95)'); r.addColorStop(1, 'rgba(255,60,40,0)'); g.fillStyle = r; g.fillRect(0, 0, w, h);
+  });
+
+  /* road (texture scrolls toward camera) */
+  var ZN = 90, ZF = -130, SPAN = ZN - ZF, S = 9, N = Math.floor(SPAN / S);
+  var roadT = mkTex(512, 512, function (g, w, h) {
+    g.fillStyle = '#12151b'; g.fillRect(0, 0, w, h);
+    for (var i = 0; i < 3000; i++) { g.fillStyle = 'rgba(255,255,255,' + Math.random() * .05 + ')'; g.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
+    g.fillStyle = 'rgba(235,235,235,.85)'; g.fillRect(16, 0, 7, h); g.fillRect(w - 23, 0, 7, h);
+    g.fillStyle = '#ff8a55'; g.fillRect(w / 2 - 3, 0, 6, h * .5);
+  });
+  roadT.wrapS = roadT.wrapT = T.RepeatWrapping; roadT.repeat.set(1, SPAN / 14); roadT.anisotropy = 8;
+  var road = new T.Mesh(new T.PlaneGeometry(14, SPAN), new T.MeshStandardMaterial({ map: roadT, roughness: .5, metalness: .3 }));
+  road.rotation.x = -Math.PI / 2; road.position.z = (ZN + ZF) / 2; sc.add(road);
+  var gr = new T.Mesh(new T.PlaneGeometry(500, SPAN + 60), new T.MeshStandardMaterial({ color: 0x0a0d12, roughness: 1 }));
+  gr.rotation.x = -Math.PI / 2; gr.position.set(0, -.03, (ZN + ZF) / 2); sc.add(gr);
+
+  /* lamp posts + glow */
+  var dm = new T.Object3D();
+  var poles = new T.InstancedMesh(new T.BoxGeometry(.12, 4.2, .12), new T.MeshStandardMaterial({ color: 0x222833, roughness: .6, metalness: .6 }), N * 2);
+  var lg = new T.BufferGeometry(), lp = new Float32Array(N * 6);
+  lg.setAttribute('position', new T.BufferAttribute(lp, 3));
+  var lamps = new T.Points(lg, new T.PointsMaterial({ map: glowT, size: 3.2, color: 0xffa066, transparent: true, blending: ADD, depthWrite: false }));
+  lamps.frustumCulled = false; sc.add(poles, lamps);
+  function posts(d) {
+    for (var i = 0; i < N; i++) {
+      var z = ZN - (((i * S - d) % (N * S)) + N * S) % (N * S);
+      for (var s = 0; s < 2; s++) {
+        var x = s ? -8.4 : 8.4, k = i * 2 + s;
+        dm.position.set(x, 2.1, z); dm.updateMatrix(); poles.setMatrixAt(k, dm.matrix);
+        lp[k * 3] = x + (s ? .5 : -.5); lp[k * 3 + 1] = 4.3; lp[k * 3 + 2] = z;
+      }
+    }
+    poles.instanceMatrix.needsUpdate = true; lg.attributes.position.needsUpdate = true;
+  }
+
+  /* mountains */
+  var MC = small ? 16 : 26, mts = new T.InstancedMesh(new T.ConeGeometry(1, 1, 5), new T.MeshStandardMaterial({ color: 0x0e1420, roughness: 1, flatShading: true }), MC * 2), mm = [];
+  for (var mi = 0; mi < MC * 2; mi++) mm.push({ x: (mi % 2 ? 1 : -1) * (24 + Math.random() * 60), z: Math.random() * SPAN, w: 10 + Math.random() * 16, h: 14 + Math.random() * 34 });
+  function mount(d) {
+    mm.forEach(function (m, i) {
+      var z = ZN - (((m.z - d) % SPAN) + SPAN) % SPAN;
+      dm.position.set(m.x, m.h / 2 - 1, z); dm.scale.set(m.w, m.h, m.w); dm.updateMatrix(); mts.setMatrixAt(i, dm.matrix);
+    });
+    dm.scale.set(1, 1, 1); mts.instanceMatrix.needsUpdate = true;
+  }
+  sc.add(mts);
+
+  /* sky */
+  var stars = new T.BufferGeometry(), sp = new Float32Array(360 * 3);
+  for (var si = 0; si < 360; si++) { var a = Math.random() * 6.283, e = .05 + Math.random() * .9; sp[si * 3] = Math.cos(a) * 300 * (1 - e * .2); sp[si * 3 + 1] = 20 + e * 200; sp[si * 3 + 2] = -Math.abs(Math.sin(a)) * 300 - 20; }
+  stars.setAttribute('position', new T.BufferAttribute(sp, 3));
+  sc.add(new T.Points(stars, new T.PointsMaterial({ color: 0xcfd8ff, size: 1.4, sizeAttenuation: false, transparent: true, opacity: .7, fog: false })));
+  var hz = new T.Sprite(new T.SpriteMaterial({ map: glowT, color: 0xff6b35, blending: ADD, fog: false, depthWrite: false, opacity: .6 }));
+  hz.scale.set(260, 80, 1); hz.position.set(0, 8, -230); sc.add(hz);
+
+  /* motorbike */
+  function bike(c) {
+    var g = new T.Group(), W = [];
+    var dk = new T.MeshStandardMaterial({ color: 0x101319, roughness: .55, metalness: .6 });
+    var bd = new T.MeshStandardMaterial({ color: c, roughness: .3, metalness: .55 });
+    var su = new T.MeshStandardMaterial({ color: 0x1a212d, roughness: .7 });
+    function add(geo, m, x, y, z, rx, rz) { var o = new T.Mesh(geo, m); o.position.set(x, y, z); if (rx) o.rotation.x = rx; if (rz) o.rotation.z = rz; g.add(o); return o; }
+    [-.75, .75].forEach(function (z) {
+      var w = new T.Group(); w.position.set(0, .4, z);
+      var tr = new T.Mesh(new T.TorusGeometry(.31, .085, 10, 26), dk); tr.rotation.y = Math.PI / 2; w.add(tr);
+      var a = new T.Mesh(new T.BoxGeometry(.03, .56, .05), bd); w.add(a);
+      var b = a.clone(); b.rotation.x = Math.PI / 2; w.add(b); g.add(w); W.push(w);
+    });
+    add(new T.BoxGeometry(.32, .34, .62), dk, 0, .62, .05);
+    add(new T.BoxGeometry(.1, .1, .7), dk, 0, .5, .45);
+    add(new T.SphereGeometry(.3, 14, 12), bd, 0, .98, -.22).scale.set(.95, .75, 1.6);
+    add(new T.BoxGeometry(.3, .1, .62), dk, 0, .9, .34);
+    add(new T.BoxGeometry(.26, .14, .4), bd, 0, 1.0, .78);
+    add(new T.BoxGeometry(.34, .3, .2), bd, 0, 1.08, -.72);
+    add(new T.CylinderGeometry(.028, .028, .95, 8), dk, 0, .83, -.62, .29);
+    add(new T.BoxGeometry(.72, .045, .045), dk, 0, 1.27, -.5);
+    add(new T.SphereGeometry(.12, 10, 8), new T.MeshBasicMaterial({ color: 0xfff4e0 }), 0, 1.06, -.86);
+    add(new T.BoxGeometry(.16, .06, .04), new T.MeshBasicMaterial({ color: 0xff2a1a }), 0, 1.0, .99);
+    add(new T.CylinderGeometry(.16, .2, .62, 10), su, 0, 1.42, .14, -.6);
+    var h = add(new T.SphereGeometry(.17, 12, 10), bd, 0, 1.86, -.18);
+    add(new T.BoxGeometry(.2, .07, .1), dk, 0, 1.85, -.32);
+    [-1, 1].forEach(function (d) {
+      add(new T.CylinderGeometry(.05, .05, .56, 8), su, d * .25, 1.44, -.28, .94);
+      add(new T.CylinderGeometry(.075, .075, .45, 8), su, d * .23, .9, .12, 1.05);
+      add(new T.CylinderGeometry(.06, .06, .4, 8), su, d * .3, .66, .1, -.88);
+    });
+    var beam = new T.Mesh(new T.ConeGeometry(1.5, 12, 16, 1, true), new T.MeshBasicMaterial({ color: 0xffe2c0, transparent: true, opacity: .09, blending: ADD, depthWrite: false, side: T.DoubleSide }));
+    beam.rotation.x = Math.PI / 2; beam.position.set(0, 1.05, -6.9); g.add(beam);
+    var tl = new T.Mesh(new T.PlaneGeometry(.2, 7), new T.MeshBasicMaterial({ map: trailT, transparent: true, blending: ADD, depthWrite: false, side: T.DoubleSide }));
+    tl.rotation.x = -Math.PI / 2; tl.position.set(0, 1.0, 4.5); g.add(tl);
+    var tag = new T.Sprite(new T.SpriteMaterial({ map: glowT, color: c, blending: ADD, depthWrite: false }));
+    tag.scale.set(1.6, 1.6, 1); tag.position.y = 2.6; g.add(tag);
+    return { g: g, W: W };
+  }
+  var CFG = [[0xff6b35, 0, 0], [0x3B82F6, -2.4, 2.6], [0x22C55E, 2.5, 3.8], [0xF59E0B, -1.2, 7], [0xEF4444, 1.4, 10.5]];
+  var G = new T.Group(); sc.add(G);
+  var bikes = CFG.map(function (c) { var b = bike(c[0]); G.add(b.g); return b; });
+  var spot = new T.SpotLight(0xfff0dd, 2.4, 45, .5, .6, 1);
+  spot.position.set(0, 1.1, -.9); spot.target.position.set(0, 0, -16); bikes[0].g.add(spot, spot.target);
+
+  /* radar rings under the group (brand tie-in) */
+  var radar = new T.Group(); radar.rotation.x = -Math.PI / 2; radar.position.set(0, .04, 4); G.add(radar);
+  var rings = [[3, 0x22C55E], [5.5, 0xF59E0B], [8.5, 0xF97316], [12, 0xEF4444]].map(function (r) {
+    var m = new T.Mesh(new T.RingGeometry(r[0] - .05, r[0] + .05, 72), new T.MeshBasicMaterial({ color: r[1], transparent: true, opacity: .3, blending: ADD, depthWrite: false }));
+    radar.add(m); return m;
+  });
+  var sweep = new T.Mesh(new T.CircleGeometry(12, 40, 0, .8), new T.MeshBasicMaterial({ color: 0x22C55E, transparent: true, opacity: .07, blending: ADD, depthWrite: false }));
+  radar.add(sweep);
+
+  /* speed lines */
+  var NL = small ? 110 : 230, lgeo = new T.BufferGeometry(), lpos = new Float32Array(NL * 6), LX = [], LY = [], LZ = [];
+  for (var li = 0; li < NL; li++) {
+    var x = (Math.random() - .5) * 38, y = .2 + Math.random() * 9;
+    if (Math.abs(x) < 4.6 && y < 3.4) x += x < 0 ? -6 : 6;
+    LX.push(x); LY.push(y); LZ.push(30 - Math.random() * 160);
+  }
+  lgeo.setAttribute('position', new T.BufferAttribute(lpos, 3));
+  var lines = new T.LineSegments(lgeo, new T.LineBasicMaterial({ color: 0xffc9a8, transparent: true, opacity: .3, blending: ADD, depthWrite: false }));
+  lines.frustumCulled = false; sc.add(lines);
+
+  /* camera shots */
+  var SH = [
+    { p: [7.5, 1.3, 5], l: [0, 1, 3], f: 48 }, { p: [0, 2.3, 18], l: [0, 1.1, 3], f: 60 },
+    { p: [-3.4, .7, 10], l: [0, 1, 2], f: 52 }, { p: [3, .8, -10], l: [0, 1.1, 2], f: 55 },
+    { p: [-6, 7, 13], l: [0, 0, 3], f: 50 }, { p: [5.5, 1.6, 11], l: [-1, 1, 3], f: 58 }
+  ];
+  var tp = new T.Vector3(), tlk = new T.Vector3(), look = new T.Vector3().fromArray(SH[0].l);
+  cam.position.fromArray(SH[0].p);
+
+  var W = 1, H = 1, portrait = false;
+  function resize() {
+    W = innerWidth; H = innerHeight; ren.setSize(W, H, false);
+    cam.aspect = W / H; portrait = W / H < .9;
+    if (W > H * 1.1) cam.setViewOffset(W, H, -W * .12, 0, W, H); else cam.clearViewOffset();
+    cam.updateProjectionMatrix(); if (reduce) draw(0);
+  }
+  var mx = 0, my = 0;
+  hero.addEventListener('pointermove', function (e) { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; });
+
+  /* boost (hold) */
+  var bt = 0, bo = 0, bb = $('#boost'), kmh = $('#hud-kmh'), bar = $('#hud-bar');
+  function bset(v) { bt = reduce ? 0 : v; bb.classList.toggle('on', !!v); }
+  bb.addEventListener('pointerdown', function (e) { bset(1); try { bb.setPointerCapture(e.pointerId); } catch (x) { } });
+  ['pointerup', 'pointercancel', 'lostpointercapture', 'blur'].forEach(function (n) { bb.addEventListener(n, function () { bset(0); }); });
+  bb.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); bset(1); } });
+  bb.addEventListener('keyup', function (e) { if (e.key === ' ' || e.key === 'Enter') bset(0); });
+  bb.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+  var cur = null, ringK = 1, go = false;
+  new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) cur = e.target; }); }, { rootMargin: '-45% 0px -45% 0px' })
+    .observe(hero);
+  document.querySelectorAll('[data-shot]').forEach(function (el) { if (el !== hero) new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) cur = e.target; }); }, { rootMargin: '-45% 0px -45% 0px' }).observe(el); });
+  var speed = 34, dist = 0, t = 0, intro = reduce ? 1 : 0, shot = 0, shotT = 0, ly = scrollY, lastK = -1;
+  function draw(dt) {
+    var sy = scrollY, sv = dt > 0 ? Math.min(Math.abs(sy - ly) / dt / 1200, 1) : 0; ly = sy;
+    var fade = Math.max(0, 1 - sy / Math.max(hero.offsetHeight, 1));
+    bo += (bt - bo) * (1 - Math.exp(-dt * 4));
+    var ts = reduce ? 34 : 34 + bo * 48 + sv * 26 + (go ? 22 : 0);
+    speed += (ts - speed) * (1 - Math.exp(-dt * 2.5));
+    dist += speed * dt; t += dt;
+    roadT.offset.y = (dist / 14) % 1; posts(dist); mount(dist * .6);
+
+    intro = Math.min(intro + dt / 3.4, 1);
+    G.position.z = Math.pow(1 - intro, 3) * 48;
+    bikes.forEach(function (b, i) {
+      var c = CFG[i], ph = t * .7 + i * 1.7, sw = Math.sin(ph);
+      b.g.position.x = c[1] + sw * .55; b.g.position.z = c[2] + (i === 4 ? Math.sin(t * .4) * 2.6 : 0);
+      b.g.position.y = Math.sin(t * 9 + i) * .012 * speed / 34;
+      b.g.rotation.z = -Math.cos(ph) * .3; b.g.rotation.y = -Math.cos(ph) * .13;
+      b.W.forEach(function (w) { w.rotation.x -= speed * dt / .4; });
+    });
+    rings.forEach(function (r, i) { r.material.opacity = Math.min((.22 + .12 * Math.sin(t * 2 - i * .8)) * ringK, .85); });
+    sweep.rotation.z = -t * 1.6;
+
+    for (var i = 0; i < NL; i++) {
+      LZ[i] += speed * dt * 1.35; if (LZ[i] > 30) LZ[i] = -130 - Math.random() * 20;
+      var L = 1.5 + speed * .09 * (1 + bo), k = i * 6;
+      lpos[k] = LX[i]; lpos[k + 1] = LY[i]; lpos[k + 2] = LZ[i]; lpos[k + 3] = LX[i]; lpos[k + 4] = LY[i]; lpos[k + 5] = LZ[i] - L;
+    }
+    lgeo.attributes.position.needsUpdate = true;
+
+    var inHero = !cur || cur === hero;
+    if (inHero) { shotT += dt; if (shotT > (shot === 0 ? 3.4 : 5.2)) { shotT = 0; shot = shot + 1 >= SH.length ? 1 : shot + 1; } }
+    else { shot = +cur.getAttribute('data-shot') || 1; shotT = 0; }
+    go = !!cur && cur.id === 'beta';
+    ringK += ((cur && cur.id === 'an-toan' ? 2.4 : 1) - ringK) * (1 - Math.exp(-dt * 3));
+    var s = SH[shot], kk = 1 - Math.exp(-dt * 1.7);
+    tp.fromArray(s.p); tlk.fromArray(s.l);
+    tp.x += mx * .9; tp.y += -my * .45 + (1 - fade) * 1.6; tp.z += (1 - fade) * 8 + (portrait ? 6 : 0);
+    cam.position.lerp(tp, dt ? kk : 1); look.lerp(tlk, dt ? kk : 1);
+    var sh = .012 * speed / 34 * (1 + bo * 2); cam.position.x += (Math.random() - .5) * sh; cam.position.y += (Math.random() - .5) * sh;
+    cam.lookAt(look);
+    var tf = s.f * (portrait ? 1.22 : 1) + (speed - 34) * .2; cam.fov += (tf - cam.fov) * (dt ? kk : 1); cam.updateProjectionMatrix();
+    ren.render(sc, cam);
+
+    var kv = Math.round(speed * 3.3); if (kv !== lastK) { lastK = kv; kmh.textContent = kv; bar.style.transform = 'scaleX(' + Math.min(Math.max((speed - 30) / 60, 0), 1) + ')'; }
+  }
+
+  var on = false, raf = 0, last = 0;
+  function loop(now) {
+    if (!on) { raf = 0; return; }
+    raf = requestAnimationFrame(loop);
+    var dt = Math.min((now - last) / 1000, .05); last = now; draw(dt);
+  }
+  function sync(v) { on = v && !document.hidden && !reduce; if (on && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
+  var vis = true;
+  sync(true);
+  document.addEventListener('visibilitychange', function () { sync(vis); });
+  addEventListener('resize', resize); resize();
+  if (reduce) { t = 2; draw(0); bb.hidden = true; }
+})();
+
+  </script>
+<script>
+    /* Băng chuyền mockup trên mobile: cập nhật độ nổi bật của từng phone theo vị trí cuộn */
+    (function () {
+      var g = document.querySelector('.mockup-grid'); if (!g) return;
+      var cs = [].slice.call(g.children), ts = [].slice.call(document.querySelectorAll('.mockup-tab'));
+      var mq = matchMedia('(max-width:759px)'), reduce = matchMedia('(prefers-reduced-motion:reduce)'), tick = 0;
+      function upd() {
+        tick = 0;
+        if (!mq.matches) { cs.forEach(function (c) { c.style.removeProperty('--a'); }); return; }
+        var r = g.getBoundingClientRect(), mid = r.left + r.width / 2, step = cs[0].offsetWidth + 14, best = 0, bd = 1e9;
+        cs.forEach(function (c, i) {
+          var b = c.getBoundingClientRect(), d = Math.abs(b.left + b.width / 2 - mid);
+          c.style.setProperty('--a', Math.max(0, 1 - d / step).toFixed(3));
+          if (d < bd) { bd = d; best = i; }
+        });
+        ts.forEach(function (t, i) { t.setAttribute('aria-current', i === best ? 'true' : 'false'); });
+      }
+      g.addEventListener('scroll', function () { if (!tick) tick = requestAnimationFrame(upd); }, { passive: true });
+      addEventListener('resize', upd);
+      ts.forEach(function (t, i) {
+        t.addEventListener('click', function () {
+          var c = cs[i];
+          g.scrollTo({ left: c.offsetLeft - (g.clientWidth - c.offsetWidth) / 2, behavior: reduce.matches ? 'auto' : 'smooth' });
+        });
+      });
+      upd();
+    })();
   </script>
 </body>
 
